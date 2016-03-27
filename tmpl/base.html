@@ -1,0 +1,36 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.ico">
+    <title>{{template "title"}}</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/mosstier.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="container-fluid fullheight">
+      <div class="row transparent header">
+      	<div >
+      	   <div class="col-md-8">
+      	     <h1>Moss Tier</h1>
+      	   </div>
+      	   <div class="col-md-4"><p>
+      	     <span class="tab-space"><a href="/login">Login</a></span>
+      	     <span><a href="/register">Register</a></span>
+      	   </p></div>
+        </div>
+      </div>
+      <div class="row solid">
+        <div class="col-md-3">Navigation menu goes here</div>
+        <div class="col-md-9">Content goes here</div>
+      </div>
+      <div class="row footer transparent fullheight">
+        <p>Footer stuff</p>
+      </div>
+    </div> <!-- /container -->
+  </body>
+</html>
+{{end}}
