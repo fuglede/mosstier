@@ -25,12 +25,21 @@
       </div>
       <div class="row solid">
         <div class="col-md-3">
-        	<h2>Categories</h2>
-        	<h3>Main</h3>
-        	<h3>Challenges</h3>
-        	
-        	<h2>Other swag</h2>
-        	<ul class="list-style2">
+        	<h3>Categories</h3>
+        	<h4>Main</h4>
+        	<ul>
+        	{{ range .MainCategories }}
+        		<li><a href="/category/{{ .Abbr }}">{{ .Name }}</a></li>
+        	{{ end }}
+        	</ul>
+        	<h4>Challenges</h4>
+        	<ul>
+        	{{ range .ChallengeCategories }}
+        		<li><a href="/category/{{ .Abbr }}">{{ .Name }}</a></li>
+        	{{ end }}
+        	</ul>
+        	<h3>Other swag</h3>
+        	<ul>
               <li><a href="/rules">Rules and definitions</a></li>
               <li><a href="/export">Export boards</a></li>
               <li><a href="/about">About</a></li>

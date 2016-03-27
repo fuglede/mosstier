@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -29,7 +28,15 @@ func initializeTemplates() {
 
 // renderContent parses the content (given as a template) and puts it into our base template. 
 func renderContent(t string, w http.ResponseWriter, data interface{}) {
-	templates[t].ExecuteTemplate(w, "base", data)
+	// Besides whatever page specific content we have, we always want to render
+	// a list of categories.
+	type templateData struct {
+		MainCategories		[]category
+		ChallengeCategories	[]category
+		PageContents		interface{}
+	}
+	templateDataVar := templateData{getMainCategories(), getChallengeCategories(), data}
+	templates[t].ExecuteTemplate(w, "base", templateDataVar)
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +50,6 @@ func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	initializeTemplates()
 
-	fmt.Printf("%v", cats)	
 	staticHandler := http.FileServer(http.Dir("tmpl"))
 	http.Handle("/css/", staticHandler)
 	http.Handle("/font/", staticHandler)
