@@ -1,0 +1,8 @@
+{"news":
+	[
+		{"date": "November 11th, 2015", "contents": "New categories added."},
+		{"date": "September 20th, 2015", "contents": "Moved site to new server. TLS support."},
+		{"date": "June 6th, 2015", "contents": "Minor changes to lists of runs."},
+		{"date": "May 3rd, 2015", "contents": "Notification emails back online. You can now disable emails for challenge WRs if you so desire."}
+	]
+}

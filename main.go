@@ -6,18 +6,24 @@ import (
 	"net/http"
 )
 
-func contentHandler(templateFile string, w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("tmpl/base.html", templateFile)
+func contentHandler(t *template.Template, w http.ResponseWriter, r *http.Request) {
+	t.ParseFiles("tmpl/base.html")
 	t.ExecuteTemplate(w, "base", nil)
 	t.Execute(w, nil)
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	contentHandler("tmpl/about.html", w, r)
+	t, _ := template.ParseFiles("tmpl/about.html")
+	contentHandler(t, w, r)
 }
 
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
-	contentHandler("tmpl/frontpage.html", w, r)
+	t, _ := template.ParseFiles("tmpl/base.html",  "tmpl/frontpage.html")
+	news := readNews()
+	err := t.ExecuteTemplate(w, "base", &news)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
