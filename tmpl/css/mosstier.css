@@ -48,10 +48,19 @@ h1 {
 	color: white;
 }
 
-h1, h2 {
+h1, h2, h3 {
 	margin: 0px;
 	padding: 0px;
 	font-family: quorum_blk_btblack;
+}
+
+ul {
+	list-style-type: none;
+	padding: 4px 0px 4px 0;
+}
+
+span.bold {
+	font-family: robotobold;
 }
 
 span.tab-space {

@@ -1,11 +1,11 @@
-{{define "base"}}
+{{ define "base" }}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="/img/bluefrog.png">
-    <title>{{template "title" .}}</title>
+    <title>{{ template "title" . }}</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/mosstier.css" rel="stylesheet">
   </head>
@@ -24,8 +24,22 @@
         </div>
       </div>
       <div class="row solid">
-        <div class="col-md-3">Navigation menu goes here</div>
-        <div class="col-md-9">Content goes here</div>
+        <div class="col-md-3">
+        	<h2>Categories</h2>
+        	<h3>Main</h3>
+        	<h3>Challenges</h3>
+        	
+        	<h2>Other swag</h2>
+        	<ul class="list-style2">
+              <li><a href="/rules">Rules and definitions</a></li>
+              <li><a href="/export">Export boards</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/donate">Donate</a></li>
+              <li><a href="/contact">Contact</a></li>
+            </ul>
+        	
+        </div>
+        <div class="col-md-9">{{ template "content" . }}</div>
       </div>
       <div class="row footer transparent fullheight">
         <p>Footer stuff</p>
@@ -33,4 +47,4 @@
     </div> <!-- /container -->
   </body>
 </html>
-{{end}}
+{{ end }}

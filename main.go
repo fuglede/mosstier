@@ -12,6 +12,10 @@ func contentHandler(templateFile string, w http.ResponseWriter, r *http.Request)
 	t.Execute(w, nil)
 }
 
+func aboutHandler(w http.ResponseWriter, r *http.Request) {
+	contentHandler("tmpl/about.html", w, r)
+}
+
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 	contentHandler("tmpl/frontpage.html", w, r)
 }
@@ -22,7 +26,8 @@ func main() {
 	http.Handle("/font/", staticHandler)
 	http.Handle("/img/", staticHandler)
 	
-	http.HandleFunc("/test", frontPageHandler)
+	http.HandleFunc("/", frontPageHandler)
+	http.HandleFunc("/about", aboutHandler)
 	
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
