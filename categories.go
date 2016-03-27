@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 )
 
-
 type allCategories struct {
 	CategoryClasses	[]categoryClass `json:"categoryClasses"`
 }
@@ -31,6 +30,13 @@ func readCategories() []categoryClass {
 	return allCategories.CategoryClasses
 }
 
+func getAllCategories() (allCategories []category) {
+	for _, class := range readCategories() {
+		allCategories = append(allCategories, class.Categories...)
+	} 
+	return
+}
+
 func getMainCategories() []category {
 	return readCategories()[0].Categories
 }
@@ -38,3 +44,4 @@ func getMainCategories() []category {
 func getChallengeCategories() []category {
 	return readCategories()[1].Categories
 }
+

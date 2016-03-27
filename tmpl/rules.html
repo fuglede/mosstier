@@ -1,0 +1,19 @@
+{{ define "title" }}Rules and definitions{{ end }}
+{{ define "content" }}
+<h3>Rules and regulations</h3>
+<p>To ensure that all scores and times on this website are legit, a few simple rules need to be put in place. Most of these can be broken by the persistent cheater and this website is largely built around good faith; be good!</p>
+<ul>
+  <li><span class="bold">No daily challenges.</span> As the seeds of daily challenges can be worked out, we allow only runs in the ordinary play mode. Please include in your video proof that your run is not a daily challenge, either by including the main menu or death message in the video. If you want to submit videos for daily challenges, we recommend checking out <a href="http://spelunkyexplorers.com/">Spelunky Explorers</a>.</li>
+  <li><span class="bold">Only Spelunky HD runs.</span> This one is probably self-explanatory by now.</li>
+  <li><span class="bold">Only solo runs.</span> Coop runs could be interesting but are not supported for now.</li>
+  <li><span class="bold">No hacks.</span> All hacks that change the game code to make the game easier for the player are disallowed. This means that any UI hack (including transparency hacks) should be reported. On the other hand, the robot spawning trick is allowed. This puts player skin changes in a grey area, where they will usually be allowed; if you want to be the safe side, just stick to vanilla Spelunky.</li>
+</ul>
+<br />
+<h3>Category definitions</h3>
+<p>All runs are assumed to satisfy the above rules. For speedruns, the completion time is that given by the game before the ending credits, and all runs start on 1&ndash;1 (see the comments above for how to do this in practice in a video).</p>
+<ul>
+  {{ range .PageContents }}
+    <li><span class="bold">{{ .Name }}.</span> {{ .Definition }}</li>
+  {{ end }}
+</ul>
+{{ end }}

@@ -36,7 +36,10 @@ func renderContent(t string, w http.ResponseWriter, data interface{}) {
 		PageContents		interface{}
 	}
 	templateDataVar := templateData{getMainCategories(), getChallengeCategories(), data}
-	templates[t].ExecuteTemplate(w, "base", templateDataVar)
+	err := templates[t].ExecuteTemplate(w, "base", templateDataVar)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,6 +48,10 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/frontpage.html", w, readNews())
+}
+
+func rulesHandler(w http.ResponseWriter, r *http.Request) {
+	renderContent("tmpl/rules.html", w, getAllCategories())
 }
 
 func main() {
@@ -57,6 +64,7 @@ func main() {
 	
 	http.HandleFunc("/", frontPageHandler)
 	http.HandleFunc("/about", aboutHandler)
+	http.HandleFunc("/rules", rulesHandler)
 	
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
