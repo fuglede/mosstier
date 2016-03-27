@@ -22,7 +22,7 @@ func main() {
 	http.Handle("/font/", staticHandler)
 	http.Handle("/img/", staticHandler)
 	
-	http.HandleFunc("/", frontPageHandler)
+	http.HandleFunc("/test", frontPageHandler)
 	
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
