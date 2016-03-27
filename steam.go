@@ -26,15 +26,15 @@ type steamRunEntry struct {
 // the given user has obtained in a run of a given type, if that user is in the
 // top 5000. It also returns the spelunker used for that run, as well as the final
 // level the user was in in that run.
-func getResultFromSteamLeaderboards(steamId int64, runType RunType) (result int64, level int64, spelunker int64, err error) {
+func getResultFromSteamLeaderboards(steamId int64, runType string) (result int64, level int64, spelunker int64, err error) {
 	result = -1
 	level = -1
 	spelunker = -1
 	
 	var leaderboardsUrl string
-	if runType == ScoreRun {
+	if runType == "score" {
 		leaderboardsUrl = scoreLeaderboards
-	} else if runType == SpeedRun {
+	} else if runType == "speed" {
 		leaderboardsUrl = speedLeaderboards
 	}
 

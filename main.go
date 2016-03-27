@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 // We store all templates on first launch for efficiency.
 var templates map[string]*template.Template
 
+// initializeTemplates populates `templates` for use in our handlers.
 func initializeTemplates() {
     if templates == nil {
         templates = make(map[string]*template.Template)
@@ -40,7 +42,8 @@ func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	initializeTemplates()
-	
+
+	fmt.Printf("%v", cats)	
 	staticHandler := http.FileServer(http.Dir("tmpl"))
 	http.Handle("/css/", staticHandler)
 	http.Handle("/font/", staticHandler)

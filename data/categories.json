@@ -1,0 +1,40 @@
+{"categoryClasses": [
+	{"class": "main", "categories":
+		[
+			{"id": 1, "name": "Score", "goal": "score", "abbr": "score",
+			 "definition": "The score is that shown either on the death screen or the victory screen at the end of any non-daily challenge run. Completing the run is not necessary."},
+			{"id": 2, "name": "Any%", "goal": "speed", "abbr": "any",
+			 "definition": "A run ending with the player completing the game."},
+			{"id": 3, "name": "Hell", "goal": "speed", "abbr": "hell",
+			 "definition": "A run ending with the player killing Yama and completing the game."},
+			{"id": 4, "name": "Low%", "goal": "speed", "abbr": "low",
+			 "definition": "As an Olmec speedrun, but the player can not pick up any aids (including bombs, ropes, and damsels) in the process. Environmental items (such as pots, rocks, and mines) are allowed."}
+		]
+	},
+	{"class": "challenge", "categories":
+		[
+			{"id": 5, "name": "No-gold", "goal": "speed", "abbr": "nogold",
+			 "definition": "The player has to complete the game having never had a score of more than $0 by the time of completion."},
+			{"id": 6, "name": "Eggplant%", "goal": "speed", "abbr": "eggplant",
+			 "definition": "The player has to complete the game after hitting Yama's head with the eggplant, triggering the eggplant music."},
+			{"id": 7, "name": "Low% hell", "goal": "speed", "abbr": "lowhell",
+			 "definition": "A run ending with the win criteria of both the Hell speedrun and the Low% speedrun combined. Unlike in the ordinary Low% category, the Ankh, the Hedjet, and the Scepter are allowed (but note that the Scepter can not be used actively)."},
+			{"id": 8, "name": "No-gold hell", "goal": "speed", "abbr": "nogoldhell",
+			 "definition": "A run ending with the playing killing Yama having never had a score of more than $0 by the time of completion."},
+			{"id": 9, "name": "Low% no-gold", "goal": "speed", "abbr": "lownogold",
+			 "definition": "A run ending with the win criteria of both the Low% speedrun and the No-gold speedrun combined."},
+			{"id": 10, "name": "Big money", "goal": "speed", "abbr": "bigmoney",
+			 "definition": "The player has to complete the game and get a final score (including the bonus for beating the game) of $500000."},
+			{"id": 11, "name": "All shortcuts", "goal": "speed", "abbr": "shortcuts",
+			 "definition": "The player has to start from the tutorial and unlock all the Tunnel Man shortcuts. The timer begins with the choice of player character and stops when the final Tunnel Man dialogue is completed."},
+			{"id": 12, "name": "Shortcuts+Olmec", "goal": "speed", "abbr": "shortcutsolmec",
+			 "definition": "Besides completing the requirements of the All shortcuts speedrun, the player has to complete the game by defeating Olmec. The timer begins with the choice of player character and stops when the screen fades to black after the player leaves through the exit from Olmec's Lair."},
+			{"id": 13, "name": "Maximum any%", "goal": "speed", "abbr": "max",
+			 "definition": "The player has to complete the game after having visited both The Worm and The Mothership."},
+			{"id": 14, "name": "Maximum hell", "goal": "speed", "abbr": "maxhell",
+			 "definition": "The player has to complete the game after killing Yama, and after having visited The Worm and The Mothership."},
+			{"id": 15, "name": "Maximum low%", "goal": "speed", "abbr": "maxlow",
+			 "definition": "A run satisfying both the conditions of the Maximum any% category and the Low% category."}
+		]
+	}
+]}
