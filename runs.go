@@ -65,8 +65,6 @@ func getRunsByCategory(category category) (runs []run, err error) {
 		}
 		r.Runner = p
 		r.Category = category
-		r.parseLevel()
-		r.parseScore()
 		r.Spelunker, _ = getSpelunkerById(spelunkerId)
 		r.RankInCategory = i
 		runs = append(runs, r)
@@ -75,23 +73,23 @@ func getRunsByCategory(category category) (runs []run, err error) {
 	return
 }
 
-// parseLevel takes the (one-indexed) number of a level (e.g. 5) and produces
+// FormatLevel takes the (one-indexed) number of a level (e.g. 5) and produces
 // a string describing it (e.g. 2-1).
-func (r *run) parseLevel() {
+func (r *run) FormatLevel() string {
 	world := (r.Level-1)/4 + 1
 	floor := (r.Level-1)%4 + 1
-	r.LevelString = fmt.Sprintf("%d-%d", world, floor)
+	return fmt.Sprintf("%d-%d", world, floor)
 }
 
-// parseScore turns a result type integer into a readable result, either by adding
+// FormatScore turns a result type integer into a readable result, either by adding
 // a dollar sign to a score, or by turning a number of milliseconds into a formatted time. 
-func (r *run) parseScore() {
+func (r *run) FormatScore() string {
 	if r.Category.Goal == "Score" {
-		r.ScoreString = fmt.Sprintf("$%d", r.Score)
+		return fmt.Sprintf("$%d", r.Score)
 	} else {
 		minutes := r.Score / 60000
 		seconds := (r.Score - 60000*minutes) / 1000
 		millisecs := r.Score - 60000*minutes - 1000*seconds
-		r.ScoreString = fmt.Sprintf("%d:%02d:%03d", minutes, seconds, millisecs)
+		return fmt.Sprintf("%d:%02d:%03d", minutes, seconds, millisecs)
 	}
 }
