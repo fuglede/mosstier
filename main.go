@@ -55,6 +55,17 @@ func rulesHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/rules.html", w, getAllCategories())
 }
 
+func initializeHandlers() {
+	staticHandler := http.FileServer(http.Dir("tmpl"))
+	http.Handle("/css/", staticHandler)
+	http.Handle("/font/", staticHandler)
+	http.Handle("/img/", staticHandler)
+	
+	http.HandleFunc("/", frontPageHandler)
+	http.HandleFunc("/about", aboutHandler)
+	http.HandleFunc("/rules", rulesHandler)
+}
+
 func main() {
 	err := initializeTemplates()
 	if err != nil {
@@ -68,15 +79,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Could not initialise database: ", err)
 	}
-	
-	staticHandler := http.FileServer(http.Dir("tmpl"))
-	http.Handle("/css/", staticHandler)
-	http.Handle("/font/", staticHandler)
-	http.Handle("/img/", staticHandler)
-	
-	http.HandleFunc("/", frontPageHandler)
-	http.HandleFunc("/about", aboutHandler)
-	http.HandleFunc("/rules", rulesHandler)
+	initializeHandlers()
 	
 	err = http.ListenAndServe(":9090", nil)
 	if err != nil {
