@@ -10,7 +10,8 @@ import (
 // We store all templates on first launch for efficiency.
 var templates map[string]*template.Template
 
-// initializeTemplates populates `templates` for use in our handlers.
+// initializeTemplates populates `templates` for use in our handlers. The logic is that each
+// of our templates is composed by base.html and some other HTML template.
 func initializeTemplates() (err error) {
     if templates == nil {
         templates = make(map[string]*template.Template)
@@ -79,10 +80,12 @@ func main() {
 	if err != nil {
 		log.Fatal("Could not initialise database: ", err)
 	}
+	
 	initializeHandlers()
 	
 	err = http.ListenAndServe(":9090", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
+		db.Close()
 	}
 }

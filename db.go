@@ -8,7 +8,6 @@ import (
 var db *sql.DB
 
 func initializeDatabase() (err error) {
-	db, err := sql.Open("mysql", config.DbConnection)
-	defer db.Close()
+	db, err = sql.Open("mysql", config.DbConnection)
 	return
 }
