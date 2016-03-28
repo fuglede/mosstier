@@ -1,0 +1,33 @@
+{{ define "title" }}Leaderboards: {{ .PageContents.Category.Name }}{{ end }}
+{{ define "content" }}
+<h3>{{ .PageContents.Category.Name }}</h3>
+<p><span class="bold">Definition</span>: {{ .PageContents.Category.Definition }}</span>
+<br />
+<table class="table">
+	<thead>
+    <tr>
+      <th>Rank</th>
+      <th>Player</th>
+      <th>{{ .PageContents.Category.Goal }}</th>
+      <th>Level</th>
+      <th>Spelunker</th>
+      <th>Video</th>
+      <th>Comment</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .PageContents.Runs }}
+      <tr>
+        <td>{{ .RankInCategory }}</td>
+		<td>{{ .Runner.Username }}</td>
+		<td>{{ .ScoreString }}</td>
+		<td>{{ .LevelString }}</td>
+		<td><img src="/img/spelunkers/{{ .Spelunker.Id }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
+		<td><a href="{{ .Link }}">Watch</a></td>
+		<td>{{ .Comment }}</td>
+      </tr>
+    {{ end }}
+  </tbody>
+</table>
+  
+{{end}}

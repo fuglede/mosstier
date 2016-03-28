@@ -56,6 +56,31 @@ func rulesHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/rules.html", w, getAllCategories())
 }
 
+func categoryHandler(w http.ResponseWriter, r *http.Request) {
+	categoryString := r.URL.Path[10:]
+	cat, err := getCategoryByAbbr(categoryString)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	type runWithRank struct {
+		Run		run
+		Rank	int
+	}
+	type categoryData struct {
+		Category	category
+		Runs		[]run
+	}
+	runs, err := getRunsByCategory(cat)
+	if err != nil {
+		log.Println("Could not get runs: ", err)
+		http.Error(w, err.Error(), 500)
+	}
+	
+	data := categoryData{cat, runs}
+	renderContent("tmpl/category.html", w, data)
+}
+
 func initializeHandlers() {
 	staticHandler := http.FileServer(http.Dir("tmpl"))
 	http.Handle("/css/", staticHandler)
@@ -65,6 +90,7 @@ func initializeHandlers() {
 	http.HandleFunc("/", frontPageHandler)
 	http.HandleFunc("/about", aboutHandler)
 	http.HandleFunc("/rules", rulesHandler)
+	http.HandleFunc("/category/", categoryHandler)
 }
 
 func main() {
@@ -80,8 +106,10 @@ func main() {
 	if err != nil {
 		log.Fatal("Could not initialise database: ", err)
 	}
+	readSpelunkerNames()
 	
 	initializeHandlers()
+	
 	
 	err = http.ListenAndServe(":9090", nil)
 	if err != nil {

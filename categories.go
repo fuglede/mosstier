@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 )
 
@@ -45,3 +46,20 @@ func getChallengeCategories() []category {
 	return readCategories()[1].Categories
 }
 
+func getCategoryByAbbr(abbr string) (category, error) {
+	for _, cat := range getAllCategories() {
+		if cat.Abbr == abbr {
+			return cat, nil
+		}
+	}
+	return category{}, errors.New("No such category")
+}
+
+func getCategoryById(id int) (category, error) {
+	for _, cat := range getAllCategories() {
+		if cat.Id == id {
+			return cat, nil
+		}
+	}
+	return category{}, errors.New("No such category")
+}

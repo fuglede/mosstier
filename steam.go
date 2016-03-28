@@ -32,9 +32,9 @@ func getResultFromSteamLeaderboards(steamId int64, runType string) (result int64
 	spelunker = -1
 	
 	var leaderboardsUrl string
-	if runType == "score" {
+	if runType == "Score" {
 		leaderboardsUrl = scoreLeaderboards
-	} else if runType == "speed" {
+	} else if runType == "Time" {
 		leaderboardsUrl = speedLeaderboards
 	}
 
