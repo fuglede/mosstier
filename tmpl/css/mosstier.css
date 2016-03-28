@@ -44,7 +44,19 @@ body {
 	font-family: robotoregular, sans-serif;
 }
 
-h1 {
+a {
+	color: #929292;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+a img {
+	border: none;
+}
+
+h1 a {
 	color: white;
 }
 
