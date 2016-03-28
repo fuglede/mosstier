@@ -19,7 +19,7 @@
     {{ range .PageContents.Runs }}
       <tr>
         <td>{{ .RankInCategory }}</td>
-		<td>{{ .Runner.Username }}</td>
+		<td><img src="/img/flags/{{ .Runner.Country }}.png" class="spelunker" alt="{{ .Runner.Country }}" /> {{ .Runner.Username }}</td>
 		<td>{{ .ScoreString }}</td>
 		<td>{{ .LevelString }}</td>
 		<td><img src="/img/spelunkers/{{ .Spelunker.Id }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
