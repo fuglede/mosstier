@@ -83,6 +83,8 @@ func (r *run) parseLevel() {
 	r.LevelString = fmt.Sprintf("%d-%d", world, floor)
 }
 
+// parseScore turns a result type integer into a readable result, either by adding
+// a dollar sign to a score, or by turning a number of milliseconds into a formatted time. 
 func (r *run) parseScore() {
 	if r.Category.Goal == "Score" {
 		r.ScoreString = fmt.Sprintf("$%d", r.Score)
