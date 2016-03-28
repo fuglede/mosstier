@@ -64,20 +64,16 @@ func categoryHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	type runWithRank struct {
-		Run  run
-		Rank int
-	}
-	type categoryData struct {
-		Category category
-		Runs     []run
-	}
 	runs, err := getRunsByCategory(cat)
 	if err != nil {
 		log.Println("Could not get runs: ", err)
 		http.Error(w, err.Error(), 500)
 	}
 
+	type categoryData struct {
+		Category category
+		Runs     []run
+	}
 	data := categoryData{cat, runs}
 	renderContent("tmpl/category.html", w, data)
 }
