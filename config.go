@@ -6,7 +6,6 @@ import (
 	"log"
 )
 
-
 type configType struct {
 	DbConnection	string	`json:"dbConnection"`
 }

@@ -54,9 +54,13 @@ func rulesHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/rules.html", w, getAllCategories())
 }
 
+
+
 func main() {
 	initializeTemplates()
-
+	readConfig()
+	initializeDatabase()
+	
 	staticHandler := http.FileServer(http.Dir("tmpl"))
 	http.Handle("/css/", staticHandler)
 	http.Handle("/font/", staticHandler)
