@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -110,7 +111,7 @@ func main() {
 
 	initializeHandlers()
 
-	err = http.ListenAndServe(":9090", nil)
+	err = http.ListenAndServe(fmt.Sprintf(":%d", config.WebserverPort), nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 		db.Close()

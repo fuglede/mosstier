@@ -7,7 +7,8 @@ import (
 )
 
 type configType struct {
-	DbConnection string `json:"dbConnection"`
+	DbConnection  string `json:"dbConnection"`
+	WebserverPort int    `json:"webserverPort"`
 }
 
 var config configType

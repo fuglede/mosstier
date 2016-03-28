@@ -1,3 +1,4 @@
 {
-	"dbConnection": "user:password@/mosstier"
+	"dbConnection": "user:password@/mosstier",
+	"webserverPort": 9090
 }
