@@ -11,19 +11,20 @@ import (
 var templates map[string]*template.Template
 
 // initializeTemplates populates `templates` for use in our handlers.
-func initializeTemplates() {
+func initializeTemplates() (err error) {
     if templates == nil {
         templates = make(map[string]*template.Template)
     }
     templateFiles, err := filepath.Glob("tmpl/*.html")
     if err != nil {
-        log.Fatal(err)
+        return
     }
     for _, t := range templateFiles {
     	if t != "tmpl/base.html" {
         	templates[t] = template.Must(template.ParseFiles("tmpl/base.html", t))
     	}
     }
+    return
 }
 
 // renderContent parses the content (given as a template) and puts it into our base template. 
@@ -54,12 +55,19 @@ func rulesHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/rules.html", w, getAllCategories())
 }
 
-
-
 func main() {
-	initializeTemplates()
-	readConfig()
-	initializeDatabase()
+	err := initializeTemplates()
+	if err != nil {
+		log.Fatal("Could not initialise templates: ", err)
+	}
+	err = readConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = initializeDatabase()
+	if err != nil {
+		log.Fatal("Could not initialise database: ", err)
+	}
 	
 	staticHandler := http.FileServer(http.Dir("tmpl"))
 	http.Handle("/css/", staticHandler)
@@ -70,7 +78,7 @@ func main() {
 	http.HandleFunc("/about", aboutHandler)
 	http.HandleFunc("/rules", rulesHandler)
 	
-	err := http.ListenAndServe(":9090", nil)
+	err = http.ListenAndServe(":9090", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
