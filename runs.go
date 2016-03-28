@@ -5,43 +5,43 @@ import (
 )
 
 type run struct {
-	Id				int
-	RankInCategory	int
-	Runner			runner
-	Category		category
-	Score			int
-	ScoreString		string
-	Level			int
-	LevelString		string
-	Link			string
-	Platform		int
-	Spelunker		spelunker
-	Time			int
-	Comment			string
-	Flag			string
+	Id             int
+	RankInCategory int
+	Runner         runner
+	Category       category
+	Score          int
+	ScoreString    string
+	Level          int
+	LevelString    string
+	Link           string
+	Platform       int
+	Spelunker      spelunker
+	Time           int
+	Comment        string
+	Flag           string
 }
 
 type runner struct {
-	Id int
-	Username string
-	Email string
-	Country string
-	Spelunker int
-	Steam int
-	Psn string
-	Xbla string
-	Twitch string
-	YouTube string
-	FreeText string
-	EmailFlag int
-	EmailWr int
+	Id             int
+	Username       string
+	Email          string
+	Country        string
+	Spelunker      int
+	Steam          int
+	Psn            string
+	Xbla           string
+	Twitch         string
+	YouTube        string
+	FreeText       string
+	EmailFlag      int
+	EmailWr        int
 	EmailChallenge int
 }
 
 // getRunsByCategory returns all runs in a given category
 func getRunsByCategory(category category) (runs []run, err error) {
 	descString := ""
-	if (category.Goal == "Score") {
+	if category.Goal == "Score" {
 		descString = " DESC"
 	}
 	query := "SELECT runs.id, runs.score, runs.level, runs.link, runs.spelunker, runs.date, runs.comment, users.id, users.username, users.country FROM runs INNER JOIN users ON runs.runner = users.id WHERE runs.cat = ? ORDER BY runs.score"
@@ -64,7 +64,7 @@ func getRunsByCategory(category category) (runs []run, err error) {
 			return
 		}
 		r.Runner = p
-		r.Category = category 
+		r.Category = category
 		r.parseLevel()
 		r.parseScore()
 		r.Spelunker, _ = getSpelunkerById(spelunkerId)
@@ -79,7 +79,7 @@ func getRunsByCategory(category category) (runs []run, err error) {
 // a string describing it (e.g. 2-1).
 func (r *run) parseLevel() {
 	world := (r.Level-1)/4 + 1
-	floor := (r.Level-1)%4 + 1 
+	floor := (r.Level-1)%4 + 1
 	r.LevelString = fmt.Sprintf("%d-%d", world, floor)
 }
 

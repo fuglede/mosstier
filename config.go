@@ -7,7 +7,7 @@ import (
 )
 
 type configType struct {
-	DbConnection	string	`json:"dbConnection"`
+	DbConnection string `json:"dbConnection"`
 }
 
 var config configType

@@ -13,29 +13,29 @@ var templates map[string]*template.Template
 // initializeTemplates populates `templates` for use in our handlers. The logic is that each
 // of our templates is composed by base.html and some other HTML template.
 func initializeTemplates() (err error) {
-    if templates == nil {
-        templates = make(map[string]*template.Template)
-    }
-    templateFiles, err := filepath.Glob("tmpl/*.html")
-    if err != nil {
-        return
-    }
-    for _, t := range templateFiles {
-    	if t != "tmpl/base.html" {
-        	templates[t] = template.Must(template.ParseFiles("tmpl/base.html", t))
-    	}
-    }
-    return
+	if templates == nil {
+		templates = make(map[string]*template.Template)
+	}
+	templateFiles, err := filepath.Glob("tmpl/*.html")
+	if err != nil {
+		return
+	}
+	for _, t := range templateFiles {
+		if t != "tmpl/base.html" {
+			templates[t] = template.Must(template.ParseFiles("tmpl/base.html", t))
+		}
+	}
+	return
 }
 
-// renderContent parses the content (given as a template) and puts it into our base template. 
+// renderContent parses the content (given as a template) and puts it into our base template.
 func renderContent(t string, w http.ResponseWriter, data interface{}) {
 	// Besides whatever page specific content we have, we always want to render
 	// a list of categories.
 	type templateData struct {
-		MainCategories		[]category
-		ChallengeCategories	[]category
-		PageContents		interface{}
+		MainCategories      []category
+		ChallengeCategories []category
+		PageContents        interface{}
 	}
 	templateDataVar := templateData{getMainCategories(), getChallengeCategories(), data}
 	err := templates[t].ExecuteTemplate(w, "base", templateDataVar)
@@ -64,19 +64,19 @@ func categoryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	type runWithRank struct {
-		Run		run
-		Rank	int
+		Run  run
+		Rank int
 	}
 	type categoryData struct {
-		Category	category
-		Runs		[]run
+		Category category
+		Runs     []run
 	}
 	runs, err := getRunsByCategory(cat)
 	if err != nil {
 		log.Println("Could not get runs: ", err)
 		http.Error(w, err.Error(), 500)
 	}
-	
+
 	data := categoryData{cat, runs}
 	renderContent("tmpl/category.html", w, data)
 }
@@ -86,7 +86,7 @@ func initializeHandlers() {
 	http.Handle("/css/", staticHandler)
 	http.Handle("/font/", staticHandler)
 	http.Handle("/img/", staticHandler)
-	
+
 	http.HandleFunc("/", frontPageHandler)
 	http.HandleFunc("/about", aboutHandler)
 	http.HandleFunc("/rules", rulesHandler)
@@ -107,10 +107,9 @@ func main() {
 		log.Fatal("Could not initialise database: ", err)
 	}
 	readSpelunkerNames()
-	
+
 	initializeHandlers()
-	
-	
+
 	err = http.ListenAndServe(":9090", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

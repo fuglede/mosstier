@@ -5,14 +5,13 @@ import (
 	"io/ioutil"
 )
 
-
 type news struct {
-	NewsEntries	[]newsEntry `json:"news"`
+	NewsEntries []newsEntry `json:"news"`
 }
 
 type newsEntry struct {
-	Date		string	`json:"date"`
-	Contents	string	`json:"contents"`
+	Date     string `json:"date"`
+	Contents string `json:"contents"`
 }
 
 // readNews returns a slice of all the news entries stored in data/news.json

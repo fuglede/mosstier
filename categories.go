@@ -7,20 +7,20 @@ import (
 )
 
 type allCategories struct {
-	CategoryClasses	[]categoryClass `json:"categoryClasses"`
+	CategoryClasses []categoryClass `json:"categoryClasses"`
 }
 
 type categoryClass struct {
-	Class		string		`json:"class"`
-	Categories	[]category	`json:"categories"`
+	Class      string     `json:"class"`
+	Categories []category `json:"categories"`
 }
 
 type category struct {
-	Id			int		`json:"id"`
-	Name		string	`json:"name"`
-	Goal		string	`json:"goal"`
-	Abbr		string	`json:"abbr"`
-	Definition	string	`json:"definition"`
+	Id         int    `json:"id"`
+	Name       string `json:"name"`
+	Goal       string `json:"goal"`
+	Abbr       string `json:"abbr"`
+	Definition string `json:"definition"`
 }
 
 // readCategories returns a slice of all the news entries stored in data/news.json
@@ -34,7 +34,7 @@ func readCategories() []categoryClass {
 func getAllCategories() (allCategories []category) {
 	for _, class := range readCategories() {
 		allCategories = append(allCategories, class.Categories...)
-	} 
+	}
 	return
 }
 

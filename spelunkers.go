@@ -7,8 +7,8 @@ import (
 )
 
 type spelunker struct {
-	Id		int
-	Name	string
+	Id   int
+	Name string
 }
 
 var spelunkers []spelunker

@@ -12,8 +12,8 @@ const scoreLeaderboards = "https://steamcommunity.com/stats/239350/leaderboards/
 const speedLeaderboards = "https://steamcommunity.com/stats/239350/leaderboards/164849/?xml=1"
 
 type steamResponse struct {
-	XMLName xml.Name `xml:"response"`
-	Entries []steamRunEntry  `xml:"entries>entry"`
+	XMLName xml.Name        `xml:"response"`
+	Entries []steamRunEntry `xml:"entries>entry"`
 }
 
 type steamRunEntry struct {
@@ -30,7 +30,7 @@ func getResultFromSteamLeaderboards(steamId int64, runType string) (result int64
 	result = -1
 	level = -1
 	spelunker = -1
-	
+
 	var leaderboardsUrl string
 	if runType == "Score" {
 		leaderboardsUrl = scoreLeaderboards
