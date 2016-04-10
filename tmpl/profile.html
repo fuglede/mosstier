@@ -1,0 +1,63 @@
+{{ define "title" }}Profile: {{ .PageContents.Runner.Username }}{{ end }}
+{{ define "content" }}
+
+{{ with .PageContents.Runner }}
+  <h3>
+    {{ .Username }}&nbsp;&nbsp;&nbsp;&nbsp;<img height="24" src="/img/spelunkers/{{ .Spelunker }}.png" />
+    {{ if .Country }}
+      <img src="/img/flags/{{ .Country }}.png" title="{{ .Country }}" />
+    {{ end }}
+  </h3>
+  <br />
+  {{ if .YouTube }}
+    <a href="https://youtube.com/user/{{ .YouTube }}"><img src="/img/community/youtube.png" height="32" title="YouTube profile"></a>
+  {{ end }}
+  {{ if .Twitch }}
+    <a href="https://www.twitch.tv/{{ .Twitch }}"><img src="/img/community/twitch.png" height="32" title="Twitch account"></a>
+  {{ end }}
+  {{ if .Steam }}
+    <a href="https://steamcommunity.com/profiles/{{ .Steam }}"><img src="/img/community/steam.png" height="32" title="Steam profile"></a>
+  {{ end }}
+  {{ if .Psn }}
+    <a href="https://psnprofiles.com/$psn"><img src="/img/community/psn.png" height="32" title="PSN profile"></a>
+  {{ end }}
+  {{ if .FreeText }}
+    <br />
+    <h4>Description</h4>
+    <p>{{ .FreeText }}</p>
+  {{ end }}
+{{ end }}
+
+<br />
+
+<h4>Best runs</h4>
+{{ if .PageContents.Runs }}
+  <table class="table">
+	<thead>
+    <tr>
+      <th>Category</th>
+      <th>Time/Score</th>
+      <th>Level</th>
+      <th>Spelunker</th>
+      <th>Video</th>
+      <th>Comment</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range .PageContents.Runs }}
+      <tr>
+        <td>{{ .Category.Name }}</td>
+        <td>{{ .FormatScore }}</td>
+        <td>{{ .FormatLevel }}</td>
+		<td><img src="/img/spelunkers/{{ .Spelunker.Id }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
+		<td><a href="{{ .Link }}">Watch</a></td>
+        <td>{{ .Comment }}</td>
+      </tr>
+    {{ end }}
+    </tbody>
+  </table>
+{{ else }}
+  This user has not submitted any runs yet.
+{{ end }}
+
+{{ end }}

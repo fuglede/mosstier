@@ -10,9 +10,7 @@ type run struct {
 	Runner         runner
 	Category       category
 	Score          int
-	ScoreString    string
 	Level          int
-	LevelString    string
 	Link           string
 	Platform       int
 	Spelunker      spelunker
@@ -21,31 +19,13 @@ type run struct {
 	Flag           string
 }
 
-type runner struct {
-	Id             int
-	Username       string
-	Email          string
-	Country        string
-	Spelunker      int
-	Steam          int
-	Psn            string
-	Xbla           string
-	Twitch         string
-	YouTube        string
-	FreeText       string
-	EmailFlag      int
-	EmailWr        int
-	EmailChallenge int
-}
-
 // getRunsByCategory returns all runs in a given category
 func getRunsByCategory(category category) (runs []run, err error) {
-	descString := ""
-	if category.Goal == "Score" {
-		descString = " DESC"
-	}
 	query := "SELECT runs.id, runs.score, runs.level, runs.link, runs.spelunker, runs.date, runs.comment, users.id, users.username, users.country FROM runs INNER JOIN users ON runs.runner = users.id WHERE runs.cat = ? ORDER BY runs.score"
-	statement, err := db.Prepare(query + descString)
+	if category.Goal == "Score" {
+		query += " DESC"
+	}
+	statement, err := db.Prepare(query)
 	if err != nil {
 		return
 	}
@@ -69,6 +49,32 @@ func getRunsByCategory(category category) (runs []run, err error) {
 		r.RankInCategory = i
 		runs = append(runs, r)
 		i += 1
+	}
+	return
+}
+
+func getRunsByRunnerId(runnerId int) (runs []run, err error) {
+	query := "SELECT id, cat, score, level, link, spelunker, date, comment FROM runs WHERE runner = ? ORDER BY cat"
+	statement, err := db.Prepare(query)
+	if err != nil {
+		return
+	}
+	defer statement.Close()
+	rows, err := statement.Query(runnerId)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		var r run
+		var spelunkerId int
+		var categoryId int
+		err = rows.Scan(&r.Id, &categoryId, &r.Score, &r.Level, &r.Link, &spelunkerId, &r.Time, &r.Comment)
+		if err != nil {
+			return
+		}
+		r.Category, _ = getCategoryById(categoryId)
+		r.Spelunker, _ = getSpelunkerById(spelunkerId)
+		runs = append(runs, r)
 	}
 	return
 }

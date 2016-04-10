@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
+	"strconv"
 )
 
 // We store all templates on first launch for efficiency.
@@ -58,8 +60,8 @@ func rulesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func categoryHandler(w http.ResponseWriter, r *http.Request) {
-	categoryString := r.URL.Path[10:]
-	cat, err := getCategoryByAbbr(categoryString)
+	vars := mux.Vars(r)
+	cat, err := getCategoryByAbbr(vars["categoryName"])
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -78,16 +80,47 @@ func categoryHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/category.html", w, data)
 }
 
+func profileHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	profileId, err := strconv.Atoi(vars["profileId"])
+	if err != nil {
+		log.Println("Could not parse profile id: ", err)
+		http.NotFound(w, r)
+		return
+	}
+	thisRunner, err := getRunnerById(profileId)
+	if err != nil {
+		log.Println("Could not find runner: ", err)
+		http.NotFound(w, r)
+		return
+	}
+	runs, err := getRunsByRunnerId(profileId)
+	if err != nil {
+		log.Println("Could not get runs: ", err)
+		http.Error(w, err.Error(), 500)
+	}
+	type profileData struct {
+		Runner runner
+		Runs   []run
+	}
+	data := profileData{thisRunner, runs}
+	renderContent("tmpl/profile.html", w, data)
+}
+
 func initializeHandlers() {
 	staticHandler := http.FileServer(http.Dir("tmpl"))
 	http.Handle("/css/", staticHandler)
 	http.Handle("/font/", staticHandler)
 	http.Handle("/img/", staticHandler)
 
-	http.HandleFunc("/", frontPageHandler)
-	http.HandleFunc("/about", aboutHandler)
-	http.HandleFunc("/rules", rulesHandler)
-	http.HandleFunc("/category/", categoryHandler)
+
+    router := mux.NewRouter()
+	router.HandleFunc("/", frontPageHandler)
+	router.HandleFunc("/about", aboutHandler)
+	router.HandleFunc("/rules", rulesHandler)
+	router.HandleFunc("/category/{categoryName:[a-z]+}", categoryHandler)
+	router.HandleFunc("/profile/{profileId:[0-9]+}", profileHandler)
+    http.Handle("/", router)
 }
 
 func main() {
