@@ -19,11 +19,30 @@ type run struct {
 	Flag           string
 }
 
-// getRunsByCategory returns all runs in a given category
-func getRunsByCategory(category category) (runs []run, err error) {
+// getAllWorldRecrods returns a slice of all current world records
+func getAllWorldRecords() ([]run, error) {
+	var err error
+	var runsInCategory []run
+	var records []run
+
+	for _, cat := range getAllCategories() {
+		runsInCategory, err = getRunsByCategory(cat, 1)
+		if err != nil {
+			return nil, err
+		}
+		records = append(records, runsInCategory[0])
+	}
+	return records, nil
+}
+
+// getRunsByCategory returns the top `limit` runs in a given category. If `limit` is 0, returns all runs.
+func getRunsByCategory(category category, limit int64) (runs []run, err error) {
 	query := "SELECT runs.id, runs.score, runs.level, runs.link, runs.spelunker, runs.date, runs.comment, users.id, users.username, users.country FROM runs INNER JOIN users ON runs.runner = users.id WHERE runs.cat = ? ORDER BY runs.score"
 	if category.Goal == "Score" {
 		query += " DESC"
+	}
+	if limit != 0 {
+		query += fmt.Sprintf(" LIMIT %d", limit)
 	}
 	statement, err := db.Prepare(query)
 	if err != nil {
@@ -88,7 +107,7 @@ func (r *run) FormatLevel() string {
 }
 
 // FormatScore turns a result type integer into a readable result, either by adding
-// a dollar sign to a score, or by turning a number of milliseconds into a formatted time. 
+// a dollar sign to a score, or by turning a number of milliseconds into a formatted time.
 func (r *run) FormatScore() string {
 	if r.Category.Goal == "Score" {
 		return fmt.Sprintf("$%d", r.Score)

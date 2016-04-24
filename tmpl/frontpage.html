@@ -9,8 +9,37 @@
 
 <br />
 
+<h3>Current world records</h3>
+<table class="table">
+	<thead>
+    <tr>
+      <th>Category</th>
+      <th>Player</th>
+      <th>Score/time</th>
+      <th>Spelunker</th>
+      <th>Video</th>
+      <th>Comment</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .PageContents.Records }}
+      <tr>
+        <td>{{ .Category.Name }}</td>
+		<td>
+		  <img src="/img/flags/{{ .Runner.Country }}.png" class="spelunker" alt="{{ .Runner.Country }}" /> <a href="/profile/{{ .Runner.Id }}">{{ .Runner.Username }}</a>
+		</td>
+		<td>{{ .FormatScore }}</td>
+		<td>{{ .FormatLevel }}</td>
+		<td><img src="/img/spelunkers/{{ .Spelunker.Id }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
+		<td><a href="{{ .Link }}">Watch</a></td>
+		<td>{{ .Comment }}</td>
+      </tr>
+    {{ end }}
+  </tbody>
+</table>
+
 <h3>News</h3>
-  {{ range .PageContents }}
+  {{ range .PageContents.News }}
     <p>{{ .Date }}:<br />{{ .Contents }}</p>
   {{ end }}
 {{end}}

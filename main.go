@@ -33,7 +33,7 @@ func initializeTemplates() (err error) {
 
 // renderContent parses the content (given as a template) and puts it into our base template.
 func renderContent(t string, w http.ResponseWriter, data interface{}) {
-	// Besides whatever page specific content we have, we always want to render
+	// Besides whatever page specific content we have (given in `data`), we always want to render
 	// a list of categories.
 	type templateData struct {
 		MainCategories      []category
@@ -52,7 +52,18 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
-	renderContent("tmpl/frontpage.html", w, readNews())
+	type frontPageData struct {
+		News    []newsEntry
+		Records []run
+	}
+	worldRecords, err := getAllWorldRecords()
+	if err != nil {
+		log.Println("Could not get world records: ", err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+	data := frontPageData{readNews(), worldRecords}
+	renderContent("tmpl/frontpage.html", w, data)
 }
 
 func rulesHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,10 +77,10 @@ func categoryHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	runs, err := getRunsByCategory(cat)
+	runs, err := getRunsByCategory(cat, 0)
 	if err != nil {
 		log.Println("Could not get runs: ", err)
-		http.Error(w, err.Error(), 500)
+		http.Error(w, "Internal server error", 500)
 	}
 
 	type categoryData struct {
@@ -113,14 +124,13 @@ func initializeHandlers() {
 	http.Handle("/font/", staticHandler)
 	http.Handle("/img/", staticHandler)
 
-
-    router := mux.NewRouter()
+	router := mux.NewRouter()
 	router.HandleFunc("/", frontPageHandler)
 	router.HandleFunc("/about", aboutHandler)
 	router.HandleFunc("/rules", rulesHandler)
 	router.HandleFunc("/category/{categoryName:[a-z]+}", categoryHandler)
 	router.HandleFunc("/profile/{profileId:[0-9]+}", profileHandler)
-    http.Handle("/", router)
+	http.Handle("/", router)
 }
 
 func main() {

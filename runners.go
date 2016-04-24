@@ -1,8 +1,6 @@
 package main
 
-import (
-	
-)
+import ()
 
 type runner struct {
 	Id             int
