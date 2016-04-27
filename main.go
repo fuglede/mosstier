@@ -51,6 +51,10 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/about.html", w, nil)
 }
 
+func exportOverviewHandler(w http.ResponseWriter, r *http.Request) {
+	renderContent("tmpl/export.html", w, getAllCategories())
+}
+
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 	type frontPageData struct {
 		News    []newsEntry
@@ -108,7 +112,7 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 	runs, err := getRunsByRunnerId(profileId)
 	if err != nil {
 		log.Println("Could not get runs: ", err)
-		http.Error(w, err.Error(), 500)
+		http.Error(w, "Internal server error", 500)
 	}
 	type profileData struct {
 		Runner runner
@@ -127,6 +131,7 @@ func initializeHandlers() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", frontPageHandler)
 	router.HandleFunc("/about", aboutHandler)
+	router.HandleFunc("/export", exportOverviewHandler)
 	router.HandleFunc("/rules", rulesHandler)
 	router.HandleFunc("/category/{categoryName:[a-z]+}", categoryHandler)
 	router.HandleFunc("/profile/{profileId:[0-9]+}", profileHandler)
