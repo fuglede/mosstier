@@ -2,7 +2,7 @@
 {{ define "content" }}
 <h3>Export boards</h3>
 <table class="table">
-	<thead>
+  <thead>
     <tr>
       <th>Runs</th>
       <th colspan="3">Format</th>
@@ -10,17 +10,17 @@
   </thead>
   <tbody>
 	<tr>
-		<td>Collected WRs</td>
-		<td><a href="/export/all/csv">CSV</a></td>
-		<td><a href="/export/all/json">JSON</a></td>
-		<td><a href="/export/all/xml">XML</a></td>
+      <td>Collected WRs</td>
+      <td><a href="/export/all/csv">CSV</a></td>
+      <td><a href="/export/all/json">JSON</a></td>
+      <td><a href="/export/all/xml">XML</a></td>
 	</tr>
     {{ range .PageContents }}
       <tr>
         <td>{{ .Name }}</td>
-		<td><a href="/export/{{ .Id }}/csv">CSV</a></td>
-		<td><a href="/export/{{ .Id }}/json">JSON</a></td>
-		<td><a href="/export/{{ .Id }}/xml">XML</a></td>
+        <td><a href="/export/{{ .Id }}/csv">CSV</a></td>
+        <td><a href="/export/{{ .Id }}/json">JSON</a></td>
+        <td><a href="/export/{{ .Id }}/xml">XML</a></td>
       </tr>
     {{ end }}
   </tbody>
