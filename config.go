@@ -13,8 +13,8 @@ type configType struct {
 	SmtpPort      int    `json:"smtpPort"`
 	SmtpUsername  string `json:"smtpUsername"`
 	// Maybe this should not sit in memory ...
-	SmtpPassword  string `json:"smtpPassword"`
-	MailSender    string `json:"mailSender"`
+	SmtpPassword string `json:"smtpPassword"`
+	MailSender   string `json:"mailSender"`
 }
 
 var config configType

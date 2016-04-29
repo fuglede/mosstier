@@ -10,12 +10,11 @@ import (
 	"strconv"
 )
 
-
 // isLegitExportFormat determines if a given format is one we know how to export
 func isLegitExportFormat(format string) bool {
 	legitFormats := [3]string{"csv", "json", "xml"}
 	for _, legit := range legitFormats {
-		if (legit == format) {
+		if legit == format {
 			return true
 		}
 	}
@@ -30,7 +29,7 @@ func exportOverviewHandler(w http.ResponseWriter, r *http.Request) {
 // exportWrHandler handles requests to /export/all/[a-z]+
 func exportWrHandler(w http.ResponseWriter, r *http.Request) {
 	var exportFormat = mux.Vars(r)["exportFormat"]
-	if (!isLegitExportFormat(exportFormat)) {
+	if !isLegitExportFormat(exportFormat) {
 		http.NotFound(w, r)
 		return
 	}
@@ -66,7 +65,12 @@ func exportWrHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		wrs := &worldRecordsJson{}
 		for _, record := range worldRecords {
-			wrs.WorldRecords = append(wrs.WorldRecords, recordJson{record.Category.Name, record.Runner.Username, record.FormatScore(), record.Link, record.Comment})
+			wrs.WorldRecords = append(wrs.WorldRecords,
+				recordJson{record.Category.Name,
+					record.Runner.Username,
+					record.FormatScore(),
+					record.Link,
+					record.Comment})
 		}
 		body, err := json.Marshal(wrs)
 		if err != nil {
@@ -87,7 +91,7 @@ func exportWrHandler(w http.ResponseWriter, r *http.Request) {
 		type worldRecordsXml struct {
 			XMLName xml.Name    `xml:"worldRecords"`
 			Records []recordXml `xml:"record"`
-		}	
+		}
 		wrs := &worldRecordsXml{}
 		for _, record := range worldRecords {
 			newRecord := &recordXml{Category: record.Category.Name}
@@ -109,7 +113,7 @@ func exportWrHandler(w http.ResponseWriter, r *http.Request) {
 // exportCategoryHandler handles requests to /export/[0-9]+/[a-z]+
 func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	exportFormat := mux.Vars(r)["exportFormat"]
-	if (!isLegitExportFormat(exportFormat)) {
+	if !isLegitExportFormat(exportFormat) {
 		http.NotFound(w, r)
 	}
 	categoryId, _ := strconv.Atoi(mux.Vars(r)["categoryId"])
@@ -131,7 +135,7 @@ func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		body := make([][]string, len(runs)+1)
 		body[0] = []string{"Rank", "Player", category.Goal, "Video link", "Comment"}
 		for i, run := range runs {
-			body[i+1] = []string{strconv.Itoa(i+1), run.Runner.Username, run.FormatScore(), run.Link, run.Comment}
+			body[i+1] = []string{strconv.Itoa(i + 1), run.Runner.Username, run.FormatScore(), run.Link, run.Comment}
 		}
 		// Output the data
 		wr := csv.NewWriter(w)
@@ -157,7 +161,8 @@ func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		runsForExport := &runsJson{}
 		runsForExport.Category = category.Name
 		for i, run := range runs {
-			runsForExport.Runs = append(runsForExport.Runs, runJson{i+1, run.Runner.Username, run.FormatScore(), run.Link, run.Comment})
+			runsForExport.Runs = append(runsForExport.Runs,
+				runJson{i + 1, run.Runner.Username, run.FormatScore(), run.Link, run.Comment})
 		}
 		body, err := json.Marshal(runsForExport)
 		if err != nil {
@@ -176,14 +181,14 @@ func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
 			Comment   string   `xml:"comment"`
 		}
 		type runsXml struct {
-			XMLName  xml.Name   `xml:"leaderboards"`
-			Category string     `xml:"category,attr"`
-			Runs     []runXml   `xml:"runs"`
-		}	
+			XMLName  xml.Name `xml:"leaderboards"`
+			Category string   `xml:"category,attr"`
+			Runs     []runXml `xml:"runs"`
+		}
 		runsForExport := &runsXml{Category: category.Name}
 		for i, run := range runs {
 			runForExport := &runXml{}
-			runForExport.Rank = i+1
+			runForExport.Rank = i + 1
 			runForExport.Player = run.Runner.Username
 			runForExport.Result = run.FormatScore()
 			runForExport.VideoLink = run.Link
@@ -197,5 +202,5 @@ func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Write(body)
 	}
-	
+
 }
