@@ -32,6 +32,7 @@ func exportWrHandler(w http.ResponseWriter, r *http.Request) {
 	var exportFormat = mux.Vars(r)["exportFormat"]
 	if (!isLegitExportFormat(exportFormat)) {
 		http.NotFound(w, r)
+		return
 	}
 	worldRecords, _ := getAllWorldRecords()
 	switch exportFormat {
@@ -116,6 +117,7 @@ func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Could not get category: ", err)
 		http.NotFound(w, r)
+		return
 	}
 	runs, err := getRunsByCategory(category, 0)
 	if err != nil {
