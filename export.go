@@ -7,7 +7,20 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strconv"
 )
+
+
+// isLegitExportFormat determines if a given format is one we know how to export
+func isLegitExportFormat(format string) bool {
+	legitFormats := [3]string{"csv", "json", "xml"}
+	for _, legit := range legitFormats {
+		if (legit == format) {
+			return true
+		}
+	}
+	return false
+}
 
 // exportOverviewHandler handles requests to /export
 func exportOverviewHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +52,7 @@ func exportWrHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal server error", 500)
 		}
 	case "json":
+		w.Header().Set("Content-Type", "application/json")
 		type recordJson struct {
 			Category  string `json:"category"`
 			Player    string `json:"player"`
@@ -60,13 +74,14 @@ func exportWrHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Write(body)
 	case "xml":
+		w.Header().Set("Content-Type", "text/xml")
 		type recordXml struct {
-			XMLName  xml.Name `xml:"record"`
-			Category string `xml:"category,attr"`
-			Player string `xml:"player"`
-			Result string `xml:"result"`
-			VideoLink string `xml:"videoLink"`
-			Comment string `xml:"comment"`
+			XMLName   xml.Name `xml:"record"`
+			Category  string   `xml:"category,attr"`
+			Player    string   `xml:"player"`
+			Result    string   `xml:"result"`
+			VideoLink string   `xml:"videoLink"`
+			Comment   string   `xml:"comment"`
 		}
 		type worldRecordsXml struct {
 			XMLName xml.Name    `xml:"worldRecords"`
@@ -88,4 +103,97 @@ func exportWrHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Write(body)
 	}
+}
+
+// exportCategoryHandler handles requests to /export/[0-9]+/[a-z]+
+func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	exportFormat := mux.Vars(r)["exportFormat"]
+	if (!isLegitExportFormat(exportFormat)) {
+		http.NotFound(w, r)
+	}
+	categoryId, _ := strconv.Atoi(mux.Vars(r)["categoryId"])
+	category, err := getCategoryById(categoryId)
+	if err != nil {
+		log.Println("Could not get category: ", err)
+		http.NotFound(w, r)
+	}
+	runs, err := getRunsByCategory(category, 0)
+	if err != nil {
+		log.Println("Could not get runs: ", err)
+		http.Error(w, "Internal server error", 500)
+	}
+	// Enter unfortunate duplication. :(
+	switch exportFormat {
+	case "csv":
+		w.Header().Set("Content-Type", "text/csv")
+		body := make([][]string, len(runs)+1)
+		body[0] = []string{"Rank", "Player", category.Goal, "Video link", "Comment"}
+		for i, run := range runs {
+			body[i+1] = []string{strconv.Itoa(i+1), run.Runner.Username, run.FormatScore(), run.Link, run.Comment}
+		}
+		// Output the data
+		wr := csv.NewWriter(w)
+		wr.Comma = ';'
+		err := wr.WriteAll(body)
+		if err != nil {
+			log.Println("Could not write csv: ", err)
+			http.Error(w, "Internal server error", 500)
+		}
+	case "json":
+		w.Header().Set("Content-Type", "application/json")
+		type runJson struct {
+			Rank      int    `json:"rank"`
+			Player    string `json:"player"`
+			Result    string `json:"result"`
+			Videolink string `json:"videoLink"`
+			Comment   string `json:"comment"`
+		}
+		type runsJson struct {
+			Category string    `json:"category"`
+			Runs     []runJson `json:"runs"`
+		}
+		runsForExport := &runsJson{}
+		runsForExport.Category = category.Name
+		for i, run := range runs {
+			runsForExport.Runs = append(runsForExport.Runs, runJson{i+1, run.Runner.Username, run.FormatScore(), run.Link, run.Comment})
+		}
+		body, err := json.Marshal(runsForExport)
+		if err != nil {
+			log.Println("Could not write json: ", err)
+			http.Error(w, "Internal server error", 500)
+		}
+		w.Write(body)
+	case "xml":
+		w.Header().Set("Content-Type", "text/xml")
+		type runXml struct {
+			XMLName   xml.Name `xml:"run"`
+			Rank      int      `xml:"rank"`
+			Player    string   `xml:"player"`
+			Result    string   `xml:"result"`
+			VideoLink string   `xml:"videoLink"`
+			Comment   string   `xml:"comment"`
+		}
+		type runsXml struct {
+			XMLName  xml.Name   `xml:"leaderboards"`
+			Category string     `xml:"category,attr"`
+			Runs     []runXml   `xml:"runs"`
+		}	
+		runsForExport := &runsXml{Category: category.Name}
+		for i, run := range runs {
+			runForExport := &runXml{}
+			runForExport.Rank = i+1
+			runForExport.Player = run.Runner.Username
+			runForExport.Result = run.FormatScore()
+			runForExport.VideoLink = run.Link
+			runForExport.Comment = run.Comment
+			runsForExport.Runs = append(runsForExport.Runs, *runForExport)
+		}
+		body, err := xml.Marshal(runsForExport)
+		if err != nil {
+			log.Println("Could not write xml: ", err)
+			http.Error(w, "Internal server error", 500)
+		}
+		w.Write(body)
+	}
+	
 }

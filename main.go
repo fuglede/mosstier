@@ -51,17 +51,6 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/about.html", w, nil)
 }
 
-// isLegitExportFormat determines if a given format is one we know how to export
-func isLegitExportFormat(format string) bool {
-	legitFormats := [3]string{"csv", "json", "xml"}
-	for _, legit := range legitFormats {
-		if (legit == format) {
-			return true
-		}
-	}
-	return false
-}
-
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 	type frontPageData struct {
 		News    []newsEntry
@@ -140,6 +129,7 @@ func initializeHandlers() {
 	router.HandleFunc("/about", aboutHandler)
 	router.HandleFunc("/export", exportOverviewHandler)
 	router.HandleFunc("/export/all/{exportFormat:[a-z]+}", exportWrHandler)
+	router.HandleFunc("/export/{categoryId:[0-9]+}/{exportFormat:[a-z]+}", exportCategoryHandler)
 	router.HandleFunc("/rules", rulesHandler)
 	router.HandleFunc("/category/{categoryName:[a-z]+}", categoryHandler)
 	router.HandleFunc("/profile/{profileId:[0-9]+}", profileHandler)
