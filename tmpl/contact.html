@@ -1,0 +1,53 @@
+{{ define "title" }}Contact{{ end }}
+{{ define "content" }}
+<h2>Contact</h2>
+
+<p>
+  Feel free to contact me about anything. Enter your email address if you want direct responses.
+</p>
+
+{{ if .PageContents.MailSent }}
+<p>
+  <span class="bold">Success</span>: Your message has been sent.
+</p>
+{{ end }}
+
+{{ if .PageContents.Error }}
+<p>
+  <span class="bold">Error</span>: {{ .PageContents.Error }}
+</p>
+{{ end }}
+
+<form action="/contact" class="form-horizontal" method="post">
+  <div class="form-group">
+    <label for="inputName" class="col-sm-2 control-label">Your name:*</label>
+    <div class="col-sm-7">
+      <input type="text" class="form-control" id="inputName" name="name" placeholder="Name">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputEmail" class="col-sm-2 control-label">Email address:</label>
+    <div class="col-sm-7">
+      <input type="email" class="form-control" id="inputEmail" name="email" placeholder="mail@example.com">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputSubject" class="col-sm-2 control-label">Subject:*</label>
+    <div class="col-sm-7">
+      <input type="subject" class="form-control" id="inputEmail" name="subject" placeholder="Subject">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputMessage" class="col-sm-2 control-label">Message:*</label>
+    <div class="col-sm-7">
+      <textarea type="message" rows="10" class="form-control" id="inputMessage" name="message" placeholder="Message"></textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">Send</button>
+    </div>
+  </div>
+</form>
+
+{{ end }}

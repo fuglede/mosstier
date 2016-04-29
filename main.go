@@ -51,6 +51,52 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/about.html", w, nil)
 }
 
+func contactHandler(w http.ResponseWriter, r *http.Request) {
+	// We will record any form errors in a single string.
+	type contactData struct {
+		MailSent bool
+		Error    string
+	}
+	var mailSent = false
+	var errorString string
+	if r.Method == "POST" {
+		success := true
+		err := r.ParseForm()
+		if err != nil {
+			errorString += "Could not read form contents. "
+			success = false
+		}
+		if len(r.Form["name"][0]) == 0 {
+			errorString += "Name field can not be empty. "
+			success = false
+		}
+		if len(r.Form["subject"][0]) == 0 {
+			errorString += "Subject field can not be empty. "
+			success = false
+		}
+		if len(r.Form["message"][0]) == 0 {
+			errorString += "Message field can not be empty. "
+			success = false
+		}
+		if success {
+			subject := "Moss Tier contact form message: " + r.Form["subject"][0]
+			message := "From: " + r.Form["name"][0] + "\r\n"
+			if r.Form["email"] != nil {
+				message += "Email: " + r.Form["email"][0] + "\r\n"
+			}
+			message += "\r\n\r\n" + r.Form["message"][0]
+			err = sendMail(config.AdminEmail, subject, message)
+			if err != nil {
+				errorString = "Mail delivery failed."
+				success = false
+			} else {
+				mailSent = true
+			}
+		}
+	}
+	renderContent("tmpl/contact.html", w, contactData{mailSent, errorString})
+}
+
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 	type frontPageData struct {
 		News    []newsEntry
@@ -127,6 +173,7 @@ func initializeHandlers() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", frontPageHandler)
 	router.HandleFunc("/about", aboutHandler)
+	router.HandleFunc("/contact", contactHandler)
 	router.HandleFunc("/export", exportOverviewHandler)
 	router.HandleFunc("/export/all/{exportFormat:[a-z]+}", exportWrHandler)
 	router.HandleFunc("/export/{categoryId:[0-9]+}/{exportFormat:[a-z]+}", exportCategoryHandler)

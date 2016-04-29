@@ -9,6 +9,7 @@ import (
 type configType struct {
 	DbConnection  string `json:"dbConnection"`
 	WebserverPort int    `json:"webserverPort"`
+	AdminEmail    string `json:"adminEmail"`
 	SmtpHost      string `json:"smtpHost"`
 	SmtpPort      int    `json:"smtpPort"`
 	SmtpUsername  string `json:"smtpUsername"`
