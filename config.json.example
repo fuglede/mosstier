@@ -1,4 +1,9 @@
 {
 	"dbConnection": "user:password@/mosstier",
 	"webserverPort": 9090
+	"smtpHost": "smtp.example.com",
+	"smtpPort": 587,
+	"smtpUsername": "user@example.com",
+	"smtpPassword": "hunter2",
+	"mailSender": "Moss Tier <noreply@example.com>"
 }
