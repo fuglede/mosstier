@@ -19,13 +19,24 @@ type runner struct {
 	EmailChallenge int
 }
 
-func getRunnerById(id int) (r runner, err error) {
-	query := "SELECT id, username, country, spelunker, steam, psn, xbla, twitch, youtube, freetext FROM users WHERE id = ?"
+// searchRunner returns a user on the site, found by applying a given filter
+func searchRunner(constraints string, values ...interface{}) (r runner, err error) {
+	query := "SELECT id, username, country, spelunker, steam, psn, xbla, twitch, youtube, freetext FROM users " + constraints
 	statement, err := db.Prepare(query)
 	if err != nil {
 		return
 	}
 	defer statement.Close()
-	err = statement.QueryRow(id).Scan(&r.Id, &r.Username, &r.Country, &r.Spelunker, &r.Steam, &r.Psn, &r.Xbla, &r.Twitch, &r.YouTube, &r.FreeText)
+	err = statement.QueryRow(values...).Scan(&r.Id, &r.Username, &r.Country, &r.Spelunker, &r.Steam, &r.Psn, &r.Xbla, &r.Twitch, &r.YouTube, &r.FreeText)
 	return
+}
+
+// getRunnerById returns the user with the specific numerical id
+func getRunnerById(id int) (runner, error) {
+	return searchRunner("WHERE id = ?", id)
+}
+
+// getRunnerByUsernameAndEmail returns the user with a given username and email
+func getRunnerByUsernameAndEmail(username string, email string) (runner, error) {
+	return searchRunner("WHERE username = ? AND email = ?", username, email)
 }

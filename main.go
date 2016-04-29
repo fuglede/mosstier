@@ -137,6 +137,11 @@ func categoryHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/category.html", w, data)
 }
 
+func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
+	
+	renderContent("tmpl/passwordreset.html", w, nil)
+}
+
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	profileId, err := strconv.Atoi(vars["profileId"])
@@ -173,13 +178,14 @@ func initializeHandlers() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", frontPageHandler)
 	router.HandleFunc("/about", aboutHandler)
+	router.HandleFunc("/category/{categoryName:[a-z]+}", categoryHandler)
 	router.HandleFunc("/contact", contactHandler)
 	router.HandleFunc("/export", exportOverviewHandler)
 	router.HandleFunc("/export/all/{exportFormat:[a-z]+}", exportWrHandler)
 	router.HandleFunc("/export/{categoryId:[0-9]+}/{exportFormat:[a-z]+}", exportCategoryHandler)
-	router.HandleFunc("/rules", rulesHandler)
-	router.HandleFunc("/category/{categoryName:[a-z]+}", categoryHandler)
+	router.HandleFunc("/password-reset", passwordResetHandler)
 	router.HandleFunc("/profile/{profileId:[0-9]+}", profileHandler)
+	router.HandleFunc("/rules", rulesHandler)
 	http.Handle("/", router)
 }
 
