@@ -104,6 +104,10 @@ span.tab-space {
 	padding: 30px 30px 20px 30px;
 }
 
+.header-login {
+	text-align: right;
+}
+
 .header p {
 	text-transform: uppercase;
 }
