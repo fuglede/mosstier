@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -91,6 +92,27 @@ func exportWrHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Could not write csv: ", err)
 			http.Error(w, "Internal server error", 500)
 		}
+	case "json":
+		type recordJson struct {
+			Category  string `json:"category"`
+			Player    string `json:"player"`
+			Result    string `json:"result"`
+			Videolink string `json:"videoLink"`
+			Comment   string `json:"comment"`
+		}
+		type worldRecordsJson struct {
+			WorldRecords []recordJson `json:"worldRecords"`
+		}
+		wrs := &worldRecordsJson{}
+		for _, record := range worldRecords {
+			wrs.WorldRecords = append(wrs.WorldRecords, recordJson{record.Category.Name, record.Runner.Username, record.FormatScore(), record.Link, record.Comment})
+		}
+		body, err := json.Marshal(wrs)
+		if err != nil {
+			log.Println("Could not write json: ", err)
+			http.Error(w, "Internal server error", 500)
+		}
+		w.Write(body)
 	case "xml":
 		type recordXml struct {
 			XMLName  xml.Name `xml:"record"`
