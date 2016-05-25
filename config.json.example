@@ -1,6 +1,6 @@
 {
 	"dbConnection": "user:password@/mosstier",
-	"webserverPort": 9090
+	"webserverPort": 9090,
 	"adminEmail": "admin@example.com",
 	"smtpHost": "smtp.example.com",
 	"smtpPort": 587,

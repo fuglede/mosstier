@@ -20,11 +20,11 @@
       <tr>
         <td>{{ .RankInCategory }}</td>
 		<td>
-		  <img src="/img/flags/{{ .Runner.Country }}.png" class="spelunker" alt="{{ .Runner.Country }}" /> <a href="/profile/{{ .Runner.Id }}">{{ .Runner.Username }}</a>
+		  <img src="/img/flags/{{ .Runner.Country }}.png" class="spelunker" alt="{{ .Runner.Country }}" /> <a href="/profile/{{ .Runner.ID }}">{{ .Runner.Username }}</a>
 		</td>
 		<td>{{ .FormatScore }}</td>
 		<td>{{ .FormatLevel }}</td>
-		<td><img src="/img/spelunkers/{{ .Spelunker.Id }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
+		<td><img src="/img/spelunkers/{{ .Spelunker.ID }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
 		<td><a href="{{ .Link }}">Watch</a></td>
 		<td>{{ .Comment }}</td>
       </tr>

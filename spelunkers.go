@@ -7,7 +7,7 @@ import (
 )
 
 type spelunker struct {
-	Id   int
+	ID   int
 	Name string
 }
 
@@ -28,9 +28,9 @@ func readSpelunkerNames() {
 	return
 }
 
-func getSpelunkerById(id int) (spelunker, error) {
+func getSpelunkerByID(id int) (spelunker, error) {
 	for _, spelunker := range spelunkers {
-		if spelunker.Id == id {
+		if spelunker.ID == id {
 			return spelunker, nil
 		}
 	}
