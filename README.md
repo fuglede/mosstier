@@ -24,4 +24,4 @@ That's pretty much it; to test your setup, run
 
     go run *.go
 
-and navigate your webserver to http://localhost:9090 (or whatever combination of host and port you decide to use).
+and navigate your webserver to [http://localhost:9090](http://localhost:9090) (or whatever combination of host and port you decide to use).
