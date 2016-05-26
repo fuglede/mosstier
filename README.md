@@ -5,7 +5,7 @@ The goal of this WIP repository is to replace https://mosstier.com by an open so
 
 
 Installation
-============
+------------
 
 To set up the server, first make sure that you have `mysql` and `go` installations on relevant machine. Then, rather than `go get`ting (which is of course also possible), the fastest way to get started is probably get the current source code from GitHub using
 
