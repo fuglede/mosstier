@@ -1,6 +1,9 @@
 package main
 
-import ()
+import (
+	"golang.org/x/crypto/bcrypt"
+	"log"
+)
 
 type runner struct {
 	Id             int
@@ -39,4 +42,15 @@ func getRunnerById(id int) (runner, error) {
 // getRunnerByUsernameAndEmail returns the user with a given username and email
 func getRunnerByUsernameAndEmail(username string, email string) (runner, error) {
 	return searchRunner("WHERE username = ? AND email = ?", username, email)
+}
+
+// UpdatePassword sets a new password for the runner.
+func (r *runner) UpdatePassword(password string) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	query = "UPDATE users SET password = " + hashedPassword + " WHERE username = " + r.Username
+	log.Println(string(hashedPassword))
+	if err != nil {
+		return err
+	}
+	return nil
 }

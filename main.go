@@ -138,8 +138,40 @@ func categoryHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
+	type passwordResetData struct {
+		PasswordReset bool
+		Error         string
+	}
+	passwordReset := false
+	var errorString string
 	
-	renderContent("tmpl/passwordreset.html", w, nil)
+	if r.Method == "POST" {
+		formValid := true 
+		err := r.ParseForm()
+		if err != nil {
+			errorString += "Could not parse form contents. "
+			formValid = false
+		}
+		if len(r.Form["username"][0]) == 0 {
+			errorString += "Username entry can not be empty. "
+			formValid = false
+		}
+		if len(r.Form["email"][0]) == 0 {
+			errorString += "Email entry can not be empty. "
+			formValid = false
+		}
+		if formValid {
+			user, err := getRunnerByUsernameAndEmail(r.Form["username"][0], r.Form["email"][0])
+			if err != nil {
+				errorString += "Could not find any user with that combination of username and email."
+			} else {
+				errorString = generatePassword()
+				user.UpdatePassword(errorString)
+				passwordReset = true
+			}
+		}
+	}
+	renderContent("tmpl/passwordreset.html", w, passwordResetData{passwordReset, errorString})
 }
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
