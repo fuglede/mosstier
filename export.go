@@ -4,10 +4,11 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"encoding/xml"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 // isLegitExportFormat determines if a given format is one we know how to export
@@ -116,8 +117,8 @@ func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	if !isLegitExportFormat(exportFormat) {
 		http.NotFound(w, r)
 	}
-	categoryId, _ := strconv.Atoi(mux.Vars(r)["categoryId"])
-	category, err := getCategoryById(categoryId)
+	categoryID, _ := strconv.Atoi(mux.Vars(r)["categoryID"])
+	category, err := getCategoryByID(categoryID)
 	if err != nil {
 		log.Println("Could not get category: ", err)
 		http.NotFound(w, r)
@@ -147,22 +148,22 @@ func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	case "json":
 		w.Header().Set("Content-Type", "application/json")
-		type runJson struct {
+		type runJSON struct {
 			Rank      int    `json:"rank"`
 			Player    string `json:"player"`
 			Result    string `json:"result"`
 			Videolink string `json:"videoLink"`
 			Comment   string `json:"comment"`
 		}
-		type runsJson struct {
+		type runsJSON struct {
 			Category string    `json:"category"`
-			Runs     []runJson `json:"runs"`
+			Runs     []runJSON `json:"runs"`
 		}
-		runsForExport := &runsJson{}
+		runsForExport := &runsJSON{}
 		runsForExport.Category = category.Name
 		for i, run := range runs {
 			runsForExport.Runs = append(runsForExport.Runs,
-				runJson{i + 1, run.Runner.Username, run.FormatScore(), run.Link, run.Comment})
+				runJSON{i + 1, run.Runner.Username, run.FormatScore(), run.Link, run.Comment})
 		}
 		body, err := json.Marshal(runsForExport)
 		if err != nil {
@@ -172,7 +173,7 @@ func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(body)
 	case "xml":
 		w.Header().Set("Content-Type", "text/xml")
-		type runXml struct {
+		type runXML struct {
 			XMLName   xml.Name `xml:"run"`
 			Rank      int      `xml:"rank"`
 			Player    string   `xml:"player"`
@@ -180,14 +181,14 @@ func exportCategoryHandler(w http.ResponseWriter, r *http.Request) {
 			VideoLink string   `xml:"videoLink"`
 			Comment   string   `xml:"comment"`
 		}
-		type runsXml struct {
+		type runsXML struct {
 			XMLName  xml.Name `xml:"leaderboards"`
 			Category string   `xml:"category,attr"`
-			Runs     []runXml `xml:"runs"`
+			Runs     []runXML `xml:"runs"`
 		}
-		runsForExport := &runsXml{Category: category.Name}
+		runsForExport := &runsXML{Category: category.Name}
 		for i, run := range runs {
-			runForExport := &runXml{}
+			runForExport := &runXML{}
 			runForExport.Rank = i + 1
 			runForExport.Player = run.Runner.Username
 			runForExport.Result = run.FormatScore()

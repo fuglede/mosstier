@@ -16,7 +16,7 @@ type categoryClass struct {
 }
 
 type category struct {
-	Id         int    `json:"id"`
+	ID         int    `json:"id"`
 	Name       string `json:"name"`
 	Goal       string `json:"goal"`
 	Abbr       string `json:"abbr"`
@@ -55,9 +55,9 @@ func getCategoryByAbbr(abbr string) (category, error) {
 	return category{}, errors.New("No such category")
 }
 
-func getCategoryById(id int) (category, error) {
+func getCategoryByID(id int) (category, error) {
 	for _, cat := range getAllCategories() {
-		if cat.Id == id {
+		if cat.ID == id {
 			return cat, nil
 		}
 	}

@@ -18,9 +18,9 @@
     {{ range .PageContents }}
       <tr>
         <td>{{ .Name }}</td>
-        <td><a href="/export/{{ .Id }}/csv">CSV</a></td>
-        <td><a href="/export/{{ .Id }}/json">JSON</a></td>
-        <td><a href="/export/{{ .Id }}/xml">XML</a></td>
+        <td><a href="/export/{{ .ID }}/csv">CSV</a></td>
+        <td><a href="/export/{{ .ID }}/json">JSON</a></td>
+        <td><a href="/export/{{ .ID }}/xml">XML</a></td>
       </tr>
     {{ end }}
   </tbody>

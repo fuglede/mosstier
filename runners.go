@@ -4,9 +4,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 )
-
 type runner struct {
-	Id             int
+	ID             int
 	Username       string
 	Email          string
 	Country        string
@@ -30,12 +29,12 @@ func searchRunner(constraints string, values ...interface{}) (r runner, err erro
 		return
 	}
 	defer statement.Close()
-	err = statement.QueryRow(values...).Scan(&r.Id, &r.Username, &r.Country, &r.Spelunker, &r.Steam, &r.Psn, &r.Xbla, &r.Twitch, &r.YouTube, &r.FreeText)
+	err = statement.QueryRow(values...).Scan(&r.ID, &r.Username, &r.Country, &r.Spelunker, &r.Steam, &r.Psn, &r.Xbla, &r.Twitch, &r.YouTube, &r.FreeText)
 	return
 }
 
 // getRunnerById returns the user with the specific numerical id
-func getRunnerById(id int) (runner, error) {
+func getRunnerByID(id int) (runner, error) {
 	return searchRunner("WHERE id = ?", id)
 }
 

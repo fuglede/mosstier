@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 // We store all templates on first launch for efficiency.
@@ -176,19 +177,19 @@ func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	profileId, err := strconv.Atoi(vars["profileId"])
+	profileID, err := strconv.Atoi(vars["profileID"])
 	if err != nil {
 		log.Println("Could not parse profile id: ", err)
 		http.NotFound(w, r)
 		return
 	}
-	thisRunner, err := getRunnerById(profileId)
+	thisRunner, err := getRunnerByID(profileID)
 	if err != nil {
 		log.Println("Could not find runner: ", err)
 		http.NotFound(w, r)
 		return
 	}
-	runs, err := getRunsByRunnerId(profileId)
+	runs, err := getRunsByRunnerID(profileID)
 	if err != nil {
 		log.Println("Could not get runs: ", err)
 		http.Error(w, "Internal server error", 500)
@@ -214,9 +215,9 @@ func initializeHandlers() {
 	router.HandleFunc("/contact", contactHandler)
 	router.HandleFunc("/export", exportOverviewHandler)
 	router.HandleFunc("/export/all/{exportFormat:[a-z]+}", exportWrHandler)
-	router.HandleFunc("/export/{categoryId:[0-9]+}/{exportFormat:[a-z]+}", exportCategoryHandler)
+	router.HandleFunc("/export/{categoryID:[0-9]+}/{exportFormat:[a-z]+}", exportCategoryHandler)
 	router.HandleFunc("/password-reset", passwordResetHandler)
-	router.HandleFunc("/profile/{profileId:[0-9]+}", profileHandler)
+	router.HandleFunc("/profile/{profileID:[0-9]+}", profileHandler)
 	router.HandleFunc("/rules", rulesHandler)
 	http.Handle("/", router)
 }

@@ -5,7 +5,7 @@ import (
 )
 
 type run struct {
-	Id             int
+	ID             int
 	RankInCategory int
 	Runner         runner
 	Category       category
@@ -49,7 +49,7 @@ func getRunsByCategory(category category, limit int64) (runs []run, err error) {
 		return
 	}
 	defer statement.Close()
-	rows, err := statement.Query(category.Id)
+	rows, err := statement.Query(category.ID)
 	if err != nil {
 		return
 	}
@@ -57,42 +57,42 @@ func getRunsByCategory(category category, limit int64) (runs []run, err error) {
 	for rows.Next() {
 		var r run
 		var p runner
-		var spelunkerId int
-		err = rows.Scan(&r.Id, &r.Score, &r.Level, &r.Link, &spelunkerId, &r.Time, &r.Comment, &p.Id, &p.Username, &p.Country)
+		var spelunkerID int
+		err = rows.Scan(&r.ID, &r.Score, &r.Level, &r.Link, &spelunkerID, &r.Time, &r.Comment, &p.ID, &p.Username, &p.Country)
 		if err != nil {
 			return
 		}
 		r.Runner = p
 		r.Category = category
-		r.Spelunker, _ = getSpelunkerById(spelunkerId)
+		r.Spelunker, _ = getSpelunkerByID(spelunkerID)
 		r.RankInCategory = i
 		runs = append(runs, r)
-		i += 1
+		i++
 	}
 	return
 }
 
-func getRunsByRunnerId(runnerId int) (runs []run, err error) {
+func getRunsByRunnerID(runnerID int) (runs []run, err error) {
 	query := "SELECT id, cat, score, level, link, spelunker, date, comment FROM runs WHERE runner = ? ORDER BY cat"
 	statement, err := db.Prepare(query)
 	if err != nil {
 		return
 	}
 	defer statement.Close()
-	rows, err := statement.Query(runnerId)
+	rows, err := statement.Query(runnerID)
 	if err != nil {
 		return
 	}
 	for rows.Next() {
 		var r run
-		var spelunkerId int
-		var categoryId int
-		err = rows.Scan(&r.Id, &categoryId, &r.Score, &r.Level, &r.Link, &spelunkerId, &r.Time, &r.Comment)
+		var spelunkerID int
+		var categoryID int
+		err = rows.Scan(&r.ID, &categoryID, &r.Score, &r.Level, &r.Link, &spelunkerID, &r.Time, &r.Comment)
 		if err != nil {
 			return
 		}
-		r.Category, _ = getCategoryById(categoryId)
-		r.Spelunker, _ = getSpelunkerById(spelunkerId)
+		r.Category, _ = getCategoryByID(categoryID)
+		r.Spelunker, _ = getSpelunkerByID(spelunkerID)
 		runs = append(runs, r)
 	}
 	return
@@ -111,10 +111,9 @@ func (r *run) FormatLevel() string {
 func (r *run) FormatScore() string {
 	if r.Category.Goal == "Score" {
 		return fmt.Sprintf("$%d", r.Score)
-	} else {
-		minutes := r.Score / 60000
-		seconds := (r.Score - 60000*minutes) / 1000
-		millisecs := r.Score - 60000*minutes - 1000*seconds
-		return fmt.Sprintf("%d:%02d:%03d", minutes, seconds, millisecs)
 	}
+	minutes := r.Score / 60000
+	seconds := (r.Score - 60000*minutes) / 1000
+	millisecs := r.Score - 60000*minutes - 1000*seconds
+	return fmt.Sprintf("%d:%02d:%03d", minutes, seconds, millisecs)
 }
