@@ -23,7 +23,8 @@ type category struct {
 	Definition string `json:"definition"`
 }
 
-// readCategories returns a slice of all the news entries stored in data/news.json
+// readCategories returns a slice of all the categories stored in data/categories.json,
+// split up into their respective classes
 func readCategories() []categoryClass {
 	categoriesFile, _ := ioutil.ReadFile("data/categories.json")
 	var allCategories allCategories
@@ -31,6 +32,7 @@ func readCategories() []categoryClass {
 	return allCategories.CategoryClasses
 }
 
+// getAllCategories returns a slice of all categories
 func getAllCategories() (allCategories []category) {
 	for _, class := range readCategories() {
 		allCategories = append(allCategories, class.Categories...)
@@ -38,14 +40,28 @@ func getAllCategories() (allCategories []category) {
 	return
 }
 
+// getMainCategories returns a slice of all the categories considered
+// to be the most interesting ones.
 func getMainCategories() []category {
 	return readCategories()[0].Categories
 }
 
+// isMain returns true iff the given category is a main category.
+func (cat *category) isMain() bool {
+	for _, mainCat := range getMainCategories() {
+		if mainCat.ID == cat.ID {
+			return true
+		}
+	}
+	return false
+}
+
+// getMainCategories returns a slice of all non-main categories.
 func getChallengeCategories() []category {
 	return readCategories()[1].Categories
 }
 
+// getCategoryByAbbr returns the category with a given abbreviation.
 func getCategoryByAbbr(abbr string) (category, error) {
 	for _, cat := range getAllCategories() {
 		if cat.Abbr == abbr {
@@ -55,6 +71,7 @@ func getCategoryByAbbr(abbr string) (category, error) {
 	return category{}, errors.New("No such category")
 }
 
+// getCategoryByID returns the category with a given integer ID.
 func getCategoryByID(id int) (category, error) {
 	for _, cat := range getAllCategories() {
 		if cat.ID == id {

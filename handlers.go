@@ -85,15 +85,37 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 // frontPageHandler handles GET requests to "/"
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
-	type frontPageData struct {
-		News    []newsEntry
-		Records []run
+	// We split the world records into t heir two classes. Rather
+	// than just using map to do this, we make our own struct to
+	// be able to control ordering more explicitly.
+	type classWithRecords struct {
+		Description string
+		Records     []run
 	}
-	worldRecords, err := getAllWorldRecords()
+	type frontPageData struct {
+		News         []newsEntry
+		WorldRecords []classWithRecords
+	}
+	allWorldRecords, err := getAllWorldRecords()
+	var mainWRs []run
+	var challengeWRs []run
 	if err != nil {
 		log.Println("Could not get world records: ", err)
 		http.Error(w, "Internal server error", 500)
 		return
+	}
+	// Now actually split split the world records
+	for _, wr := range allWorldRecords {
+		if wr.Category.isMain() {
+			mainWRs = append(mainWRs, wr)
+		} else {
+			challengeWRs = append(challengeWRs, wr)
+		}
+	}
+
+	worldRecords := []classWithRecords{
+		classWithRecords{"Main categories", mainWRs},
+		classWithRecords{"Challenge categories", challengeWRs},
 	}
 	data := frontPageData{readNews(), worldRecords}
 	renderContent("tmpl/frontpage.html", w, data)
