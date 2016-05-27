@@ -216,6 +216,17 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/profile.html", w, data)
 }
 
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	type registerData struct {
+		Success bool
+		Error   string
+	}
+	success := false
+	errorString := ""
+	data := registerData{success, errorString}
+	renderContent("tmpl/register.html", w, data)
+}
+
 func initializeHandlers() {
 	staticHandler := http.FileServer(http.Dir("tmpl"))
 	http.Handle("/css/", staticHandler)
@@ -226,13 +237,14 @@ func initializeHandlers() {
 	router.HandleFunc("/", frontPageHandler)
 	router.HandleFunc("/about", aboutHandler)
 	router.HandleFunc("/category/{categoryName:[a-z]+}", categoryHandler)
-	router.HandleFunc("/category/{categoryName:[a-z]+}/find/{runner:[a-zA-Z_-]+}", categoryHandler)
+	router.HandleFunc("/category/{categoryName:[a-z]+}/find/{runner:[0-9a-zA-Z_-]+}", categoryHandler)
 	router.HandleFunc("/contact", contactHandler)
 	router.HandleFunc("/export", exportOverviewHandler)
 	router.HandleFunc("/export/all/{exportFormat:[a-z]+}", exportWrHandler)
 	router.HandleFunc("/export/{categoryID:[0-9]+}/{exportFormat:[a-z]+}", exportCategoryHandler)
 	router.HandleFunc("/password-reset", passwordResetHandler)
 	router.HandleFunc("/profile/{profileID:[0-9]+}", profileHandler)
+	router.HandleFunc("/register", registerHandler)
 	router.HandleFunc("/rules", rulesHandler)
 	http.Handle("/", router)
 }
