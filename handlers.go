@@ -13,6 +13,29 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/about.html", w, nil)
 }
 
+// categoryHandler handles GET requests to "/category*"
+func categoryHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	cat, err := getCategoryByAbbr(vars["categoryName"])
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	runs, err := getRunsByCategory(cat, 0)
+	if err != nil {
+		log.Println("Could not get runs: ", err)
+		http.Error(w, "Internal server error", 500)
+	}
+	highlightedRunner := vars["runner"]
+	type categoryData struct {
+		Category          category
+		Runs              []run
+		HighlightedRunner string
+	}
+	data := categoryData{cat, runs, highlightedRunner}
+	renderContent("tmpl/category.html", w, data)
+}
+
 // contactHandler handles GET and POST requests to "/contact"
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 	// We will record any form errors in a single string.
@@ -60,7 +83,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/contact.html", w, contactData{mailSent, errorString})
 }
 
-// contactHandler handles GET requests to "/"
+// frontPageHandler handles GET requests to "/"
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 	type frontPageData struct {
 		News    []newsEntry
@@ -74,29 +97,6 @@ func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	data := frontPageData{readNews(), worldRecords}
 	renderContent("tmpl/frontpage.html", w, data)
-}
-
-// categoryHandler handles GET requests to "/category*"
-func categoryHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	cat, err := getCategoryByAbbr(vars["categoryName"])
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-	runs, err := getRunsByCategory(cat, 0)
-	if err != nil {
-		log.Println("Could not get runs: ", err)
-		http.Error(w, "Internal server error", 500)
-	}
-	highlightedRunner := vars["runner"]
-	type categoryData struct {
-		Category          category
-		Runs              []run
-		HighlightedRunner string
-	}
-	data := categoryData{cat, runs, highlightedRunner}
-	renderContent("tmpl/category.html", w, data)
 }
 
 // passwordResetHandler handles GET requests to "/password-reset"
