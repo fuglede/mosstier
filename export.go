@@ -10,7 +10,6 @@ import (
 
 	"github.com/gorilla/mux"
 )
-
 // isLegitExportFormat determines if a given format is one we know how to export
 func isLegitExportFormat(format string) bool {
 	legitFormats := [3]string{"csv", "json", "xml"}
