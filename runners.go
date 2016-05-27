@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
+
 	"golang.org/x/crypto/bcrypt"
-	"log"
 )
+
 type runner struct {
 	ID             int
 	Username       string
@@ -23,13 +25,13 @@ type runner struct {
 
 // searchRunner returns a user on the site, found by applying a given filter
 func searchRunner(constraints string, values ...interface{}) (r runner, err error) {
-	query := "SELECT id, username, country, spelunker, steam, psn, xbla, twitch, youtube, freetext FROM users " + constraints
+	query := "SELECT id, username, email, country, spelunker, steam, psn, xbla, twitch, youtube, freetext FROM users " + constraints
 	statement, err := db.Prepare(query)
 	if err != nil {
 		return
 	}
 	defer statement.Close()
-	err = statement.QueryRow(values...).Scan(&r.ID, &r.Username, &r.Country, &r.Spelunker, &r.Steam, &r.Psn, &r.Xbla, &r.Twitch, &r.YouTube, &r.FreeText)
+	err = statement.QueryRow(values...).Scan(&r.ID, &r.Username, &r.Email, &r.Country, &r.Spelunker, &r.Steam, &r.Psn, &r.Xbla, &r.Twitch, &r.YouTube, &r.FreeText)
 	return
 }
 
@@ -43,13 +45,28 @@ func getRunnerByUsernameAndEmail(username string, email string) (runner, error) 
 	return searchRunner("WHERE username = ? AND email = ?", username, email)
 }
 
-// UpdatePassword sets a new password for the runner.
-func (r *runner) UpdatePassword(password string) error {
+// updatePassword sets a new password for the runner.
+func (r *runner) updatePassword(password string) error {
+	if r.Email == "" {
+		return errors.New("user has no email set; it would be impossible to notify them")
+	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
-	query = "UPDATE users SET password = " + hashedPassword + " WHERE username = " + r.Username
-	log.Println(string(hashedPassword))
 	if err != nil {
 		return err
 	}
-	return nil
+	query, err := db.Prepare("UPDATE users SET pass = ? WHERE username = ?")
+	if err != nil {
+		return err
+	}
+	_, err = query.Exec(string(hashedPassword), r.Username)
+	return err
+}
+
+// sendMail sends an email to the runner
+func (r *runner) sendMail(subject string, body string) error {
+	if r.Email == "" {
+		return errors.New("user has no associated email address")
+	}
+	err := sendMail(r.Email, subject, body)
+	return err
 }

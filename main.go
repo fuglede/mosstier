@@ -145,9 +145,9 @@ func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	passwordReset := false
 	var errorString string
-	
+
 	if r.Method == "POST" {
-		formValid := true 
+		formValid := true
 		err := r.ParseForm()
 		if err != nil {
 			errorString += "Could not parse form contents. "
@@ -164,11 +164,24 @@ func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 		if formValid {
 			user, err := getRunnerByUsernameAndEmail(r.Form["username"][0], r.Form["email"][0])
 			if err != nil {
-				errorString += "Could not find any user with that combination of username and email."
+				errorString += "Could not find any user with that combination of username and email. "
 			} else {
-				errorString = generatePassword()
-				user.UpdatePassword(errorString)
-				passwordReset = true
+				newPassword := generatePassword()
+				// Send a mail to the user with the password, before attempting to update it
+				err = user.sendMail("Password reset", "Hi "+user.Username+". Someone (hopefully you) requested "+
+					"a new password for you on Moss Tier. Here's your new one: "+newPassword)
+				if err != nil {
+					errorString += "Could not send you an email with your new password."
+					log.Println(err)
+				} else {
+					err = user.updatePassword(generatePassword())
+					if err != nil {
+						errorString += "Could not update your password due to an unexpected error. "
+						log.Println(err)
+					} else {
+						passwordReset = true
+					}
+				}
 			}
 		}
 	}
