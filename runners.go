@@ -62,7 +62,7 @@ func (r *runner) updatePassword(password string) error {
 	return err
 }
 
-// sendMail sends an email to the runner
+// sendMail sends an email to the runner with a given subject and message body
 func (r *runner) sendMail(subject string, body string) error {
 	if r.Email == "" {
 		return errors.New("user has no associated email address")
