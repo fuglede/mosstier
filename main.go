@@ -129,12 +129,13 @@ func categoryHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Could not get runs: ", err)
 		http.Error(w, "Internal server error", 500)
 	}
-
+	highlightedRunner := vars["runner"]
 	type categoryData struct {
-		Category category
-		Runs     []run
+		Category          category
+		Runs              []run
+		HighlightedRunner string
 	}
-	data := categoryData{cat, runs}
+	data := categoryData{cat, runs, highlightedRunner}
 	renderContent("tmpl/category.html", w, data)
 }
 
@@ -225,6 +226,7 @@ func initializeHandlers() {
 	router.HandleFunc("/", frontPageHandler)
 	router.HandleFunc("/about", aboutHandler)
 	router.HandleFunc("/category/{categoryName:[a-z]+}", categoryHandler)
+	router.HandleFunc("/category/{categoryName:[a-z]+}/find/{runner:[a-zA-Z_-]+}", categoryHandler)
 	router.HandleFunc("/contact", contactHandler)
 	router.HandleFunc("/export", exportOverviewHandler)
 	router.HandleFunc("/export/all/{exportFormat:[a-z]+}", exportWrHandler)

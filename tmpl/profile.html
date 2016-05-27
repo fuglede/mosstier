@@ -46,7 +46,11 @@
     <tbody>
     {{ range .PageContents.Runs }}
       <tr>
-        <td>{{ .Category.Name }}</td>
+        <td>
+          <a href="/category/{{ .Category.Abbr }}/find/{{ .Runner.Username }}">
+            {{ .Category.Name }}
+          </a>
+        </td>
         <td>{{ .FormatScore }}</td>
         <td>{{ .FormatLevel }}</td>
 		<td><img src="/img/spelunkers/{{ .Spelunker.ID }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>

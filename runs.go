@@ -72,7 +72,12 @@ func getRunsByCategory(category category, limit int64) (runs []run, err error) {
 	return
 }
 
+// getRunsByRunnerID produces a slide of all runs registered for a given runner
 func getRunsByRunnerID(runnerID int) (runs []run, err error) {
+	runner, err := getRunnerByID(runnerID)
+	if err != nil {
+		return
+	}
 	query := "SELECT id, cat, score, level, link, spelunker, date, comment FROM runs WHERE runner = ? ORDER BY cat"
 	statement, err := db.Prepare(query)
 	if err != nil {
@@ -91,6 +96,7 @@ func getRunsByRunnerID(runnerID int) (runs []run, err error) {
 		if err != nil {
 			return
 		}
+		r.Runner = runner
 		r.Category, _ = getCategoryByID(categoryID)
 		r.Spelunker, _ = getSpelunkerByID(spelunkerID)
 		runs = append(runs, r)
