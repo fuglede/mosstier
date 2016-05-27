@@ -186,6 +186,44 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	success := false
 	errorString := ""
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			errorString += "Could not parse form contents. "
+		} else {
+			username := r.Form["username"][0]
+			email := r.Form["email"][0]
+			password := r.Form["password"][0]
+			password2 := r.Form["password2"][0]
+			shouldCreateUser := true
+			if !isLegitUsername(username) {
+				errorString += "Username contains unallowed characters. "
+				shouldCreateUser = false
+			}
+			if !isLegitEmailAddress(email) && email != "" {
+				errorString += "Email address looks illegit. "
+				shouldCreateUser = false
+			}
+			if password != password2 {
+				errorString += "The two passwords to not match. "
+				shouldCreateUser = false
+			}
+			if _, err = getRunnerByUsername(username); err == nil {
+				errorString += "A user with that username already exists. "
+				shouldCreateUser = false
+			}
+			if shouldCreateUser {
+				err = makeUser(username, email, password)
+				if err != nil {
+					errorString += "Could not create user. Please try again later. "
+					log.Println(err)
+				} else {
+					success = true
+				}
+			}
+		}
+	}
+
 	data := registerData{success, errorString}
 	renderContent("tmpl/register.html", w, data)
 }

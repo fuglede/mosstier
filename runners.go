@@ -40,9 +40,28 @@ func getRunnerByID(id int) (runner, error) {
 	return searchRunner("WHERE id = ?", id)
 }
 
+// getRunnerByUsername returns the user with a given username
+func getRunnerByUsername(username string) (runner, error) {
+	return searchRunner("WHERE username = ?", username)
+}
+
 // getRunnerByUsernameAndEmail returns the user with a given username and email
 func getRunnerByUsernameAndEmail(username string, email string) (runner, error) {
 	return searchRunner("WHERE username = ? AND email = ?", username, email)
+}
+
+// makeUser creates a new user with a given username, email, and password
+func makeUser(username string, email string, password string) (err error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	if err != nil {
+		return
+	}
+	stmt, err := db.Prepare("INSERT INTO users SET username = ?, email = ?, pass = ?")
+	if err != nil {
+		return
+	}
+	_, err = stmt.Exec(username, email, string(hashedPassword))
+	return
 }
 
 // updatePassword sets a new password for the runner.
