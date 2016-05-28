@@ -51,30 +51,19 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 			errorString += "Could not read form contents. "
 		}
 		name, err := getFormValue(r, "name")
-		if err != nil {
-			errorString += "Could not parse name. "
-		}
-		if len(name) == 0 {
+		if err != nil || name == "" {
 			errorString += "Name field can not be empty. "
 		}
-		// We try to parse the email, even if it is not required;
-		// if not given, it should still return an empty string.
 		email, err := getFormValue(r, "email")
 		if err != nil {
 			errorString += "Could not parse email. "
 		}
 		subject, err := getFormValue(r, "subject")
-		if err != nil {
-			errorString += "Could not parse subject. "
-		}
-		if len(subject) == 0 {
+		if err != nil || subject == "" {
 			errorString += "Subject field can not be empty. "
 		}
 		message, err := getFormValue(r, "message")
-		if err != nil {
-			errorString += "Could not parse message. "
-		}
-		if len(message) == 0 {
+		if err != nil || message == "" {
 			errorString += "Message field can not be empty. "
 		}
 		if errorString == "" {
@@ -148,17 +137,11 @@ func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 			errorString += "Could not parse form contents. "
 		}
 		username, err := getFormValue(r, "username")
-		if err != nil {
-			errorString += "Could not parse username. "
-		}
-		if username == "" {
+		if err != nil || username == "" {
 			errorString += "Username entry can not be empty. "
 		}
 		email, err := getFormValue(r, "email")
-		if err != nil {
-			errorString += "Could not parse email. "
-		}
-		if email == "" {
+		if err != nil || email == "" {
 			errorString += "Email entry can not be empty. "
 		}
 		if errorString == "" {
@@ -303,12 +286,7 @@ func reportHandler(w http.ResponseWriter, r *http.Request) {
 			errorString += "Could not parse form contents. "
 		} else {
 			explanation, err := getFormValue(r, "explanation")
-			if err != nil {
-				log.Println("Invalid explanation: ", err)
-				http.Error(w, "Internal server error", 500)
-				return
-			}
-			if explanation == "" {
+			if err != nil || explanation == "" {
 				errorString += "Explanation given can not be empty. "
 			} else {
 				err = sendMails(config.Moderators, "Moss Tier run reported",
