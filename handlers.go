@@ -46,35 +46,47 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	var mailSent = false
 	var errorString string
 	if r.Method == "POST" {
-		success := true
 		err := r.ParseForm()
 		if err != nil {
 			errorString += "Could not read form contents. "
-			success = false
 		}
-		if len(r.Form["name"][0]) == 0 {
+		name, err := getFormValue(r, "name")
+		if err != nil {
+			errorString += "Could not parse name. "
+		}
+		if len(name) == 0 {
 			errorString += "Name field can not be empty. "
-			success = false
 		}
-		if len(r.Form["subject"][0]) == 0 {
+		// We try to parse the email, even if it is not required;
+		// if not given, it should still return an empty string.
+		email, err := getFormValue(r, "email")
+		if err != nil {
+			errorString += "Could not parse email. "
+		}
+		subject, err := getFormValue(r, "subject")
+		if err != nil {
+			errorString += "Could not parse subject. "
+		}
+		if len(subject) == 0 {
 			errorString += "Subject field can not be empty. "
-			success = false
 		}
-		if len(r.Form["message"][0]) == 0 {
+		message, err := getFormValue(r, "message")
+		if err != nil {
+			errorString += "Could not parse message. "
+		}
+		if len(message) == 0 {
 			errorString += "Message field can not be empty. "
-			success = false
 		}
-		if success {
-			subject := "Moss Tier contact form message: " + r.Form["subject"][0]
-			message := "From: " + r.Form["name"][0] + "\r\n"
-			if r.Form["email"] != nil {
-				message += "Email: " + r.Form["email"][0] + "\r\n"
+		if errorString == "" {
+			subject := "Moss Tier contact form message: " + subject
+			mailBody := "From: " + name + "\r\n"
+			if email != "" {
+				mailBody += "Email: " + email + "\r\n"
 			}
-			message += "\r\n\r\n" + r.Form["message"][0]
-			err = sendMail(config.AdminEmail, subject, message)
+			mailBody += "\r\n\r\n" + message
+			err = sendMail(config.AdminEmail, subject, mailBody)
 			if err != nil {
 				errorString = "Mail delivery failed."
-				success = false
 			} else {
 				mailSent = true
 			}
@@ -131,22 +143,26 @@ func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 	var errorString string
 
 	if r.Method == "POST" {
-		formValid := true
 		err := r.ParseForm()
 		if err != nil {
 			errorString += "Could not parse form contents. "
-			formValid = false
 		}
-		if len(r.Form["username"][0]) == 0 {
+		username, err := getFormValue(r, "username")
+		if err != nil {
+			errorString += "Could not parse username. "
+		}
+		if username == "" {
 			errorString += "Username entry can not be empty. "
-			formValid = false
 		}
-		if len(r.Form["email"][0]) == 0 {
+		email, err := getFormValue(r, "email")
+		if err != nil {
+			errorString += "Could not parse email. "
+		}
+		if email == "" {
 			errorString += "Email entry can not be empty. "
-			formValid = false
 		}
-		if formValid {
-			user, err := getRunnerByUsernameAndEmail(r.Form["username"][0], r.Form["email"][0])
+		if errorString == "" {
+			user, err := getRunnerByUsernameAndEmail(username, email)
 			if err != nil {
 				errorString += "Could not find any user with that combination of username and email. "
 			} else {
@@ -213,28 +229,35 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			errorString += "Could not parse form contents. "
 		} else {
-			username := r.Form["username"][0]
-			email := r.Form["email"][0]
-			password := r.Form["password"][0]
-			password2 := r.Form["password2"][0]
-			shouldCreateUser := true
+			username, err := getFormValue(r, "username")
+			if err != nil {
+				errorString += "Could not parse username. "
+			}
+			email, err := getFormValue(r, "email")
+			if err != nil {
+				errorString += "Could not parse email. "
+			}
+			password, err := getFormValue(r, "password")
+			if err != nil {
+				errorString += "Could not parse password. "
+			}
+			password2, err := getFormValue(r, "password2")
+			if err != nil {
+				errorString += "Could not parse repeated password. "
+			}
 			if !isLegitUsername(username) {
 				errorString += "Username contains unallowed characters. "
-				shouldCreateUser = false
 			}
 			if !isLegitEmailAddress(email) && email != "" {
 				errorString += "Email address looks illegit. "
-				shouldCreateUser = false
 			}
 			if password != password2 {
 				errorString += "The two passwords to not match. "
-				shouldCreateUser = false
 			}
 			if _, err = getRunnerByUsername(username); err == nil {
 				errorString += "A user with that username already exists. "
-				shouldCreateUser = false
 			}
-			if shouldCreateUser {
+			if errorString == "" {
 				err = makeUser(username, email, password)
 				if err != nil {
 					errorString += "Could not create user. Please try again later. "
@@ -279,7 +302,12 @@ func reportHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			errorString += "Could not parse form contents. "
 		} else {
-			explanation := r.Form["explanation"][0]
+			explanation, err := getFormValue(r, "explanation")
+			if err != nil {
+				log.Println("Invalid explanation: ", err)
+				http.Error(w, "Internal server error", 500)
+				return
+			}
 			if explanation == "" {
 				errorString += "Explanation given can not be empty. "
 			} else {
@@ -287,7 +315,8 @@ func reportHandler(w http.ResponseWriter, r *http.Request) {
 					"Hi Moss Tier moderator. The run by "+run.Runner.Username+" in the "+
 						"category "+run.Category.Name+" (id "+strconv.Itoa(runID)+") "+
 						"has been reported as violating the rules. Could you check it "+
-						"out and flag the run if needed?")
+						"out and flag the run if needed? The explanation they gave was "+
+						"\""+explanation+"\"")
 				if err != nil {
 					errorString += "Could not send mail to moderators. Please try again later. "
 				} else {

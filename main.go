@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
@@ -46,6 +47,15 @@ func renderContent(t string, w http.ResponseWriter, data interface{}) {
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+// getFormValue returns the value of a given POST parameter if non-empty
+func getFormValue(r *http.Request, key string) (string, error) {
+	formValue, ok := r.Form[key]
+	if ok {
+		return formValue[0], nil
+	}
+	return "", errors.New(key + " was not a POST parameter")
 }
 
 // initializeHandlers sets up the relevant handlers for all possible
