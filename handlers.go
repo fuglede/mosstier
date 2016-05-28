@@ -250,6 +250,57 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/register.html", w, data)
 }
 
+// reportHandler handles GET and POST requests to /report*
+func reportHandler(w http.ResponseWriter, r *http.Request) {
+	type reportData struct {
+		Run     run
+		Success bool
+		Error   string
+	}
+	success := false
+	var errorString string
+
+	vars := mux.Vars(r)
+	runID, err := strconv.Atoi(vars["runID"])
+	if err != nil {
+		log.Println("Could not parse run ID: ", err)
+		http.NotFound(w, r)
+		return
+	}
+	run, err := getRunByID(runID)
+	if err != nil {
+		log.Println("Could not find run with given ID: ", err)
+		http.NotFound(w, r)
+		return
+	}
+
+	if r.Method == "POST" {
+		err = r.ParseForm()
+		if err != nil {
+			errorString += "Could not parse form contents. "
+		} else {
+			explanation := r.Form["explanation"][0]
+			if explanation == "" {
+				errorString += "Explanation given can not be empty. "
+			} else {
+				err = sendMails(config.Moderators, "Moss Tier run reported",
+					"Hi Moss Tier moderator. The run by "+run.Runner.Username+" in the "+
+						"category "+run.Category.Name+" (id "+strconv.Itoa(runID)+") "+
+						"has been reported as violating the rules. Could you check it "+
+						"out and flag the run if needed?")
+				if err != nil {
+					errorString += "Could not send mail to moderators. Please try again later. "
+				} else {
+					success = true
+				}
+			}
+		}
+	}
+
+	data := reportData{run, success, errorString}
+	renderContent("tmpl/report.html", w, data)
+}
+
 // rulesHandler handles GET requests to "/rules"
 func rulesHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/rules.html", w, getAllCategories())

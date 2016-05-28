@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"log"
 	"net/smtp"
@@ -46,4 +47,19 @@ func sendMail(recipient string, subject string, body string) (err error) {
 		log.Println("Could not send mail: ", err)
 	}
 	return
+}
+
+// sendMails sends mails to several recipients
+func sendMails(recipients []string, subject string, body string) error {
+	var err error
+	for _, recipient := range recipients {
+		err = sendMail(recipient, subject, body)
+		if err != nil {
+			log.Println("Could send mail to "+recipient+": ", err)
+		}
+	}
+	if err != nil {
+		return errors.New("could not send to one or more recipients")
+	}
+	return nil
 }

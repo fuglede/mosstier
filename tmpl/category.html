@@ -13,6 +13,7 @@
       <th>Spelunker</th>
       <th>Video</th>
       <th>Comment</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -27,6 +28,7 @@
         <td><img src="/img/spelunkers/{{ .Spelunker.ID }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
         <td><a href="{{ .Link }}">Watch</a></td>
         <td>{{ .Comment }}</td>
+        <td><a href="/report/{{ .ID }}">Report</a>
       </tr>
     {{ end }}
   </tbody>

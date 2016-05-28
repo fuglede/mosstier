@@ -104,6 +104,19 @@ func getRunsByRunnerID(runnerID int) (runs []run, err error) {
 	return
 }
 
+func getRunByID(runID int) (r run, err error) {
+	stmt, err := db.Prepare("SELECT runs.score, runs.cat, users.username FROM runs INNER JOIN users ON runs.runner = users.id WHERE runs.id = ?")
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+	var categoryID int
+	err = stmt.QueryRow(runID).Scan(&r.Score, &categoryID, &r.Runner.Username)
+	r.ID = runID
+	r.Category, _ = getCategoryByID(categoryID)
+	return
+}
+
 // FormatLevel takes the (one-indexed) number of a level (e.g. 5) and produces
 // a string describing it (e.g. 2-1).
 func (r *run) FormatLevel() string {

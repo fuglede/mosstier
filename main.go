@@ -68,6 +68,7 @@ func initializeHandlers() {
 	router.HandleFunc("/password-reset", passwordResetHandler)
 	router.HandleFunc("/profile/{profileID:[0-9]+}", profileHandler)
 	router.HandleFunc("/register", registerHandler)
+	router.HandleFunc("/report/{runID:[0-9]+}", reportHandler)
 	router.HandleFunc("/rules", rulesHandler)
 	http.Handle("/", router)
 }
