@@ -75,6 +75,7 @@ func initializeHandlers() {
 	router.HandleFunc("/export", exportOverviewHandler)
 	router.HandleFunc("/export/all/{exportFormat:[a-z]+}", exportWrHandler)
 	router.HandleFunc("/export/{categoryID:[0-9]+}/{exportFormat:[a-z]+}", exportCategoryHandler)
+	router.HandleFunc("/login", loginHandler)
 	router.HandleFunc("/password-reset", passwordResetHandler)
 	router.HandleFunc("/profile/{profileID:[0-9]+}", profileHandler)
 	router.HandleFunc("/register", registerHandler)

@@ -122,7 +122,19 @@ func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/frontpage.html", w, data)
 }
 
-// passwordResetHandler handles GET requests to "/password-reset"
+// loginHandler handles GET and POST requests to "/login"
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	type loginData struct {
+		Success bool
+		Error   string
+	}
+	success := false
+	var errorString string
+	data := loginData{success, errorString}
+	renderContent("tmpl/login.html", w, data)
+}
+
+// passwordResetHandler handles GET and POST requests to "/password-reset"
 func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 	type passwordResetData struct {
 		PasswordReset bool
