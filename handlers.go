@@ -133,7 +133,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	var errorString string
 
 	if r.Method == "POST" {
-		user, err := loginParser(r)
+		user, err := loginFormParser(r)
 		if err != nil {
 			errorString = err.Error()
 		} else {
@@ -164,44 +164,29 @@ func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 	var errorString string
 
 	if r.Method == "POST" {
-		err := r.ParseForm()
+		user, err := passwordResetFormParser(r)
 		if err != nil {
-			errorString += "Could not parse form contents. "
-		}
-		username, err := getFormValue(r, "username")
-		if err != nil || username == "" {
-			errorString += "Username entry can not be empty. "
-		}
-		email, err := getFormValue(r, "email")
-		if err != nil || email == "" {
-			errorString += "Email entry can not be empty. "
-		}
-		if errorString == "" {
-			user, err := getRunnerByUsernameAndEmail(username, email)
+			errorString = err.Error()
+		} else {
+			newPassword, err := generatePassword()
 			if err != nil {
-				errorString += "Could not find any user with that combination of username and email. "
+				log.Println(err)
+				http.Error(w, "Internal server error", 500)
+				return
+			}
+			// Send a mail to the user with the password, before attempting to update it
+			err = user.sendMail("Password reset", "Hi "+user.Username+". Someone (hopefully you) requested "+
+				"a new password for you on Moss Tier. Here's your new one: "+newPassword)
+			if err != nil {
+				errorString += "Could not send you an email with your new password."
+				log.Println(err)
 			} else {
-				newPassword, err := generatePassword()
+				err = user.updatePassword(newPassword)
 				if err != nil {
-					log.Println(err)
-					http.Error(w, "Internal server error", 500)
-					return
-				}
-				log.Println(newPassword)
-				// Send a mail to the user with the password, before attempting to update it
-				err = user.sendMail("Password reset", "Hi "+user.Username+". Someone (hopefully you) requested "+
-					"a new password for you on Moss Tier. Here's your new one: "+newPassword)
-				if err != nil {
-					errorString += "Could not send you an email with your new password."
+					errorString += "Could not update your password due to an unexpected error. "
 					log.Println(err)
 				} else {
-					err = user.updatePassword(newPassword)
-					if err != nil {
-						errorString += "Could not update your password due to an unexpected error. "
-						log.Println(err)
-					} else {
-						passwordReset = true
-					}
+					passwordReset = true
 				}
 			}
 		}
