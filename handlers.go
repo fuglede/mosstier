@@ -231,46 +231,16 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	success := false
 	errorString := ""
 	if r.Method == "POST" {
-		err := r.ParseForm()
+		username, email, password, err := registerFormParser(r)
 		if err != nil {
-			errorString += "Could not parse form contents. "
+			errorString = err.Error()
 		} else {
-			username, err := getFormValue(r, "username")
+			err = makeUser(username, email, password)
 			if err != nil {
-				errorString += "Could not parse username. "
-			}
-			email, err := getFormValue(r, "email")
-			if err != nil {
-				errorString += "Could not parse email. "
-			}
-			password, err := getFormValue(r, "password")
-			if err != nil {
-				errorString += "Could not parse password. "
-			}
-			password2, err := getFormValue(r, "password2")
-			if err != nil {
-				errorString += "Could not parse repeated password. "
-			}
-			if !isLegitUsername(username) {
-				errorString += "Username contains unallowed characters. "
-			}
-			if !isLegitEmailAddress(email) && email != "" {
-				errorString += "Email address looks illegit. "
-			}
-			if password != password2 {
-				errorString += "The two passwords to not match. "
-			}
-			if _, err = getRunnerByUsername(username); err == nil {
-				errorString += "A user with that username already exists. "
-			}
-			if errorString == "" {
-				err = makeUser(username, email, password)
-				if err != nil {
-					errorString += "Could not create user. Please try again later. "
-					log.Println(err)
-				} else {
-					success = true
-				}
+				errorString += "Could not create user. Please try again later. "
+				log.Println(err)
+			} else {
+				success = true
 			}
 		}
 	}
