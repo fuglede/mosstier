@@ -103,45 +103,54 @@ func passwordResetFormParser(r *http.Request) (runner, error) {
 }
 
 // registerFormParser parses forms posted to "/register" and returns
-// the username, email, and password posted on success.
-func registerFormParser(r *http.Request) (string, string, string, error) {
-	err := r.ParseForm()
+// the posted contents.
+func registerFormParser(r *http.Request) (username string, email string,
+	password string, password2 string, err error) {
+	err = r.ParseForm()
 	if err != nil {
-		return "", "", "", errors.New("Could not parse form contents.")
+		err = errors.New("Could not parse form contents.")
+		return
 	}
-	username, err := getFormValue(r, "username")
-	if err != nil {
-		return "", "", "", errors.New("Could not parse username.")
+	username, usernameErr := getFormValue(r, "username")
+	email, emailErr := getFormValue(r, "email")
+	password, passwordErr := getFormValue(r, "password")
+	password2, password2Err := getFormValue(r, "password2")
+	if usernameErr != nil {
+		err = errors.New("Could not parse username.")
+		return
 	}
-	email, err := getFormValue(r, "email")
-	if err != nil {
-		return "", "", "", errors.New("Could not parse email.")
+	if emailErr != nil {
+		err = errors.New("Could not parse email.")
+		return
 	}
-	password, err := getFormValue(r, "password")
-	if err != nil {
-		return "", "", "", errors.New("Could not parse password.")
+	if passwordErr != nil {
+		err = errors.New("Could not parse password.")
+		return
 	}
-	password2, err := getFormValue(r, "password2")
-	if err != nil {
-		return "", "", "", errors.New("Could not parse repeated password.")
+	if password2Err != nil {
+		err = errors.New("Could not parse repeated password.")
+		return
 	}
 	if !isLegitUsername(username) {
-		return "", "", "", errors.New("Username contains unallowed characters.")
+		err = errors.New("Username contains unallowed characters.")
+		return
 	}
 	if !isLegitEmailAddress(email) && email != "" {
-		return "", "", "", errors.New("Email address looks illegit.")
+		err = errors.New("Email address looks illegit.")
+		return
 	}
 	if password != password2 {
-		return "", "", "", errors.New("The two passwords to not match.")
+		err = errors.New("The two passwords to not match.")
+		return
 	}
 	if _, err = getRunnerByUsername(username); err == nil {
-		return "", "", "", errors.New("A user with that username already exists.")
+		err = errors.New("A user with that username already exists.")
+		return
 	}
-	return username, email, password, nil
+	err = nil
+	return
 }
 
-// reportFormParser parses the form for reporting runs, and returns
-// the explanation given by the reporter on success
 func reportFormParser(r *http.Request) (string, error) {
 	err := r.ParseForm()
 	if err != nil {

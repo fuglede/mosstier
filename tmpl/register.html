@@ -2,58 +2,62 @@
 {{ define "content" }}
 <h2>Register new user</h2>
 
-{{ if .PageContents.Success }}
-<p>
-  <span class="bold">Success</span>: Your new user has been created.
-</p>
-{{ end }}
-
 {{ if .PageContents.Error }}
 <p>
   <span class="bold">Error</span>: {{ .PageContents.Error }}
 </p>
 {{ end }}
 
+{{ if .PageContents.Success }}
 <p>
-  Fill in the form below to create a new user.
+  <span class="bold">Success</span>: Your new user has been created.
 </p>
+<p>
+  <a href="/edit-profile">Edit your profile</a><br />
+  <a href="/submit-run">Submit run</a>
+</p>
+{{ else }}
+  <p>
+    Fill in the form below to create a new user.
+  </p>
 
-<form action="/register" class="form-horizontal" method="post">
-  <div class="form-group">
-    <label for="inputUsername" class="col-sm-2 control-label">Username:</label>
-    <div class="col-sm-3">
-      <input type="text" class="form-control" id="inputUsername" name="username" placeholder="Username">
+  <form action="/register" class="form-horizontal" method="post">
+    <div class="form-group">
+      <label for="inputUsername" class="col-sm-2 control-label">Username:</label>
+      <div class="col-sm-3">
+        <input type="text" class="form-control" id="inputUsername" name="username" placeholder="Username" value="{{ .PageContents.UsernameInput }}">
+      </div>
+      <div class="col-sm-4">
+        (allowed chars: a-Z, 0-9, -, and _.)
+      </div>
     </div>
-    <div class="col-sm-4">
-      (allowed chars: a-Z, 0-9, -, and _.)
+    <div class="form-group">
+      <label for="inputEmail" class="col-sm-2 control-label">Email address:</label>
+      <div class="col-sm-3">
+        <input type="email" class="form-control" id="inputEmail" name="email" placeholder="mail@example.com" value="{{ .PageContents.EmailInput }}">
+      </div>
+      <div class="col-sm-4">
+        (optional, used for password recovery)
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    <label for="inputEmail" class="col-sm-2 control-label">Email address:</label>
-    <div class="col-sm-3">
-      <input type="email" class="form-control" id="inputEmail" name="email" placeholder="mail@example.com">
+    <div class="form-group">
+      <label for="inputPassword" class="col-sm-2 control-label">Password:</label>
+      <div class="col-sm-3">
+        <input type="password" class="form-control" id="inputPassword" name="password" placeholder="***************"  value="{{ .PageContents.PasswordInput }}">
+      </div>
     </div>
-    <div class="col-sm-4">
-      (optional, used for password recovery)
+    <div class="form-group">
+      <label for="inputPassword2" class="col-sm-2 control-label">Repeat password:</label>
+      <div class="col-sm-3">
+        <input type="password" class="form-control" id="inputPassword2" name="password2" placeholder="***************"  value="{{ .PageContents.Password2Input }}">
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    <label for="inputPassword" class="col-sm-2 control-label">Password:</label>
-    <div class="col-sm-3">
-      <input type="password" class="form-control" id="inputPassword" name="password" placeholder="***************">
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-default">Send</button>
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    <label for="inputPassword2" class="col-sm-2 control-label">Repeat password:</label>
-    <div class="col-sm-3">
-      <input type="password" class="form-control" id="inputPassword2" name="password2" placeholder="***************">
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-default">Send</button>
-    </div>
-  </div>
-</form>
+  </form>
+{{ end }}
 
 {{ end }}

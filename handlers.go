@@ -137,14 +137,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			errorString = err.Error()
 		} else {
-			session, err := cookieStore.Get(r, "login")
+			err = setActiveUser(r, w, user)
 			if err != nil {
 				log.Println(err)
 				http.Error(w, "Internal server error", 500)
 				return
 			}
-			session.Values["userID"] = user.ID
-			session.Save(r, w)
 			success = true
 		}
 	}
@@ -242,13 +240,22 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 // registerHandler handles GET and POST requests to "/register"
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	type registerData struct {
-		Success bool
-		Error   string
+		Success        bool
+		Error          string
+		UsernameInput  string
+		EmailInput     string
+		PasswordInput  string
+		Password2Input string
 	}
 	success := false
-	errorString := ""
+	var errorString string
+	var username string
+	var email string
+	var password string
+	var password2 string
+	var err error
 	if r.Method == "POST" {
-		username, email, password, err := registerFormParser(r)
+		username, email, password, password2, err = registerFormParser(r)
 		if err != nil {
 			errorString = err.Error()
 		} else {
@@ -257,12 +264,27 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 				errorString += "Could not create user. Please try again later. "
 				log.Println(err)
 			} else {
+				// Everything is good; now, log in as the newly
+				// created user
+				user, err := getRunnerByUsername(username)
+				if err != nil {
+					log.Println(err)
+					http.Error(w, "Internal server error", 500)
+					return
+				}
+				err = setActiveUser(r, w, user)
+				if err != nil {
+					log.Println(err)
+					http.Error(w, "Internal server error", 500)
+					return
+				}
 				success = true
 			}
 		}
 	}
 
-	data := registerData{success, errorString}
+	data := registerData{success, errorString, username,
+		email, password, password2}
 	renderContent("tmpl/register.html", r, w, data)
 }
 
