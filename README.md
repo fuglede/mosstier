@@ -20,8 +20,9 @@ Now, to set up the Moss Tier installation, simply move the example configuration
 
     mv config.json.example config.json
 
-That's pretty much it; to test your setup, run
+That's pretty much it; to test your setup, install all dependencies, and run the code:
 
+    go get ./...
     go run *.go
 
 and navigate your webserver to [http://localhost:9090](http://localhost:9090) (or whatever combination of host and port you decide to use).
