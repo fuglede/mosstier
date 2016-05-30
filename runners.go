@@ -20,9 +20,9 @@ type runner struct {
 	Twitch         string
 	YouTube        string
 	FreeText       string
-	EmailFlag      int
-	EmailWr        int
-	EmailChallenge int
+	EmailFlag      bool
+	EmailWr        bool
+	EmailChallenge bool
 }
 
 // searchRunner returns a user on the site, found by applying a given filter
