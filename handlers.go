@@ -39,23 +39,35 @@ func categoryHandler(w http.ResponseWriter, r *http.Request) {
 
 // contactHandler handles GET and POST requests to "/contact"
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	// We will record any form errors in a single string.
+	// We keep track of user input in the template data to provide
+	// a partially filled form in case the user messes up the inputs
 	type contactData struct {
-		MailSent bool
-		Error    string
+		MailSent     bool
+		Error        string
+		NameInput    string
+		EmailInput   string
+		SubjectInput string
+		MessageInput string
 	}
 	var mailSent = false
 	var errorString string
+	var name string
+	var email string
+	var subject string
+	var message string
+	var err error
 	if r.Method == "POST" {
-		name, email, subject, message, err := contactFormParser(r)
-		if errorString == "" {
-			subject := "Moss Tier contact form message: " + subject
+		name, email, subject, message, err = contactFormParser(r)
+		if err != nil {
+			errorString = err.Error()
+		} else {
+			mailSubject := "Moss Tier contact form message: " + subject
 			mailBody := "From: " + name + "\r\n"
 			if email != "" {
 				mailBody += "Email: " + email + "\r\n"
 			}
 			mailBody += "\r\n\r\n" + message
-			err = sendMail(config.AdminEmail, subject, mailBody)
+			err = sendMail(config.AdminEmail, mailSubject, mailBody)
 			if err != nil {
 				errorString = "Mail delivery failed."
 			} else {
@@ -63,7 +75,8 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	renderContent("tmpl/contact.html", r, w, contactData{mailSent, errorString})
+	data := contactData{mailSent, errorString, name, email, subject, message}
+	renderContent("tmpl/contact.html", r, w, data)
 }
 
 // frontPageHandler handles GET requests to "/"
@@ -107,14 +120,20 @@ func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 // loginHandler handles GET and POST requests to "/login"
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	type loginData struct {
-		Success bool
-		Error   string
+		Success       bool
+		Error         string
+		UsernameInput string
+		PasswordInput string
 	}
 	success := false
 	var errorString string
+	var username string
+	var password string
+	var user runner
+	var err error
 
 	if r.Method == "POST" {
-		user, err := loginFormParser(r)
+		username, password, user, err = loginFormParser(r)
 		if err != nil {
 			errorString = err.Error()
 		} else {
@@ -130,7 +149,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data := loginData{success, errorString}
+	data := loginData{success, errorString, username, password}
 
 	renderContent("tmpl/login.html", r, w, data)
 }

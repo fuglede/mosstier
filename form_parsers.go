@@ -19,55 +19,65 @@ func getFormValue(r *http.Request, key string) (string, error) {
 
 // contactFormParser parses the contact form, and returns the name, email,
 // subject, and message on success.
-func contactFormParser(r *http.Request) (string, string, string, string, error) {
-	err := r.ParseForm()
+func contactFormParser(r *http.Request) (name string, email string,
+	subject string, message string, err error) {
+	err = r.ParseForm()
 	if err != nil {
 		return "", "", "", "", errors.New("Could not read form contents.")
 	}
-	name, err := getFormValue(r, "name")
-	if err != nil || name == "" {
-		return "", "", "", "", errors.New("Name field can not be empty.")
+	name, nameErr := getFormValue(r, "name")
+	email, emailErr := getFormValue(r, "email")
+	subject, subjectErr := getFormValue(r, "subject")
+	message, messageErr := getFormValue(r, "message")
+	if nameErr != nil || name == "" {
+		err = errors.New("Name field can not be empty.")
+		log.Println(subject)
+		return
 	}
-	email, err := getFormValue(r, "email")
-	if err != nil {
-		return "", "", "", "", errors.New("Could not parse email.")
+	if emailErr != nil {
+		err = errors.New("Could not parse email.")
+		return
 	}
-	subject, err := getFormValue(r, "subject")
-	if err != nil || subject == "" {
-		return "", "", "", "", errors.New("Subject field can not be empty.")
+	if subjectErr != nil || subject == "" {
+		err = errors.New("Subject field can not be empty.")
+		return
 	}
-	message, err := getFormValue(r, "message")
-	if err != nil || message == "" {
-		return "", "", "", "", errors.New("Message field can not be empty.")
+	if messageErr != nil || message == "" {
+		err = errors.New("Message field can not be empty.")
+		return
 	}
-	return name, email, subject, message, nil
+	return
 }
 
 // loginFormParser parses POST requests to "/login". Returns the
-// user to log in on success.
-func loginFormParser(r *http.Request) (runner, error) {
-	err := r.ParseForm()
+// user to log in on success, and the form contents in either case.
+func loginFormParser(r *http.Request) (username string, password string,
+	user runner, err error) {
+	err = r.ParseForm()
 	if err != nil {
-		return runner{}, errors.New("Could not parse form contents.")
+		err = errors.New("Could not parse form contents.")
+		return
 	}
-	username, err := getFormValue(r, "username")
-	if err != nil || !isLegitUsername(username) {
-		log.Println(username)
-		return runner{}, errors.New("Invalid username.")
+	username, usernameErr := getFormValue(r, "username")
+	password, passwordErr := getFormValue(r, "password")
+	if usernameErr != nil || !isLegitUsername(username) {
+		err = errors.New("Invalid username.")
+		return
 	}
-	password, err := getFormValue(r, "password")
-	if err != nil || !isLegitPassword(password) {
-		return runner{}, errors.New("Invalid password.")
+	if passwordErr != nil || !isLegitPassword(password) {
+		err = errors.New("Invalid password.")
+		return
 	}
-	user, err := getRunnerByUsername(username)
+	user, err = getRunnerByUsername(username)
 	if err != nil {
-		return runner{}, errors.New("Could not find user with that username.")
+		err = errors.New("Could not find a user with that username.")
+		return
 	}
 	err = user.testLogin(password)
 	if err != nil {
-		return runner{}, errors.New("Incorrect password.")
+		err = errors.New("Incorrect password.")
 	}
-	return user, nil
+	return
 }
 
 // passwordResetFormHandler parses POST requests to "/password-reset",

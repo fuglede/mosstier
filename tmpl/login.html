@@ -21,13 +21,13 @@
     <div class="form-group">
       <label for="inputUsername" class="col-sm-2 control-label">Username:</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" id="inputUsername" name="username" placeholder="Username">
+        <input type="text" class="form-control" id="inputUsername" name="username" placeholder="Username" value="{{ .PageContents.UsernameInput }}">
       </div>
     </div>
     <div class="form-group">
       <label for="inputPassword" class="col-sm-2 control-label">Password:</label>
       <div class="col-sm-7">
-        <input type="password" class="form-control" id="inputPassword" name="password" placeholder="***********">
+        <input type="password" class="form-control" id="inputPassword" name="password" placeholder="***********" value="{{ .PageContents.PasswordInput }}">
       </div>
     </div>
     <div class="form-group">
