@@ -43,7 +43,7 @@ func initializeCookieStore() {
 		securecookie.GenerateRandomKey(32))
 	cookieStore.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   86400 * 7,
+		MaxAge:   0, // Lasts until end of session
 		HttpOnly: true,
 	}
 }
@@ -79,11 +79,18 @@ func renderContent(t string, r *http.Request, w http.ResponseWriter, data interf
 		MainCategories      []category
 		ChallengeCategories []category
 		ActiveUser          runner
+		UserLoggedIn        bool
 		PageContents        interface{}
 	}
-	user, _ := getActiveUser(r)
-	templateDataVar := templateData{getMainCategories(), getChallengeCategories(), user, data}
-	err := templates[t].ExecuteTemplate(w, "base", templateDataVar)
+	user, err := getActiveUser(r)
+	loggedIn := err == nil
+	templateDataVar := templateData{
+		getMainCategories(),
+		getChallengeCategories(),
+		user,
+		loggedIn,
+		data}
+	err = templates[t].ExecuteTemplate(w, "base", templateDataVar)
 	if err != nil {
 		log.Println(err)
 	}
