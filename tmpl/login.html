@@ -6,41 +6,42 @@
   Enter your username and password in the fields below to log in.
 </p>
 
-{{ if .PageContents.Success }}
-<p>
-  <span class="bold">Success</span>: You are now logged in.
-</p>
-{{ end }}
-
 {{ if .PageContents.Error }}
 <p>
   <span class="bold">Error</span>: {{ .PageContents.Error }}
 </p>
 {{ end }}
 
-<form action="/login" class="form-horizontal" method="post">
-  <div class="form-group">
-    <label for="inputUsername" class="col-sm-2 control-label">Username:</label>
-    <div class="col-sm-7">
-      <input type="text" class="form-control" id="inputUsername" name="username" placeholder="Username">
-    </div>
-  </div>
-  <div class="form-group">
-    <label for="inputPassword" class="col-sm-2 control-label">Password:</label>
-    <div class="col-sm-7">
-      <input type="password" class="form-control" id="inputPassword" name="password" placeholder="***********">
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-default">Send</button>
-    </div>
-  </div>
-</form>
-
+{{ if .PageContents.Success }}
 <p>
-  <a href="/password-reset">Forgot your password?</a><br />
-  <a href="/register">Create new user</a>
+  <span class="bold">Success</span>: You are now logged in.
 </p>
+{{ else }}
+  <form action="/login" class="form-horizontal" method="post">
+    <div class="form-group">
+      <label for="inputUsername" class="col-sm-2 control-label">Username:</label>
+      <div class="col-sm-7">
+        <input type="text" class="form-control" id="inputUsername" name="username" placeholder="Username">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="inputPassword" class="col-sm-2 control-label">Password:</label>
+      <div class="col-sm-7">
+        <input type="password" class="form-control" id="inputPassword" name="password" placeholder="***********">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-default">Send</button>
+      </div>
+    </div>
+  </form>
+
+  <p>
+    <a href="/password-reset">Forgot your password?</a><br />
+    <a href="/register">Create new user</a>
+  </p>
+{{ end }}
+
 
 {{ end }}
