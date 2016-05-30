@@ -11,6 +11,11 @@ func isLegitUsername(username string) bool {
 	return usernameRegex.MatchString(username)
 }
 
+// isLegitPassword returns true iff the relevant string is non-empty
+func isLegitPassword(password string) bool {
+	return password != ""
+}
+
 // isLegitEmailAddress returns true iff the given string looks
 // more or less like an email address.
 func isLegitEmailAddress(address string) bool {

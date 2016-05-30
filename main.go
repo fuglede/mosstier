@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/securecookie"
+	"github.com/gorilla/sessions"
 )
 
 // We store all templates on first launch for efficiency.
@@ -32,30 +34,59 @@ func initializeTemplates() (err error) {
 	return
 }
 
+// Login sessions are handled using a single cookie store. Keys
+// are updated on a per-server launch basis.
+var cookieStore *sessions.CookieStore
+
+func initializeCookieStore() {
+	cookieStore = sessions.NewCookieStore(securecookie.GenerateRandomKey(64),
+		securecookie.GenerateRandomKey(32))
+	cookieStore.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7,
+		HttpOnly: true,
+	}
+}
+
+// getActiveUser returns the currently logged in user, if any.
+func getActiveUser(r *http.Request) (user runner, err error) {
+	session, err := cookieStore.Get(r, "login")
+	if err != nil {
+		return
+	}
+	storedRunnerID, ok := session.Values["userID"]
+	if !ok {
+		err = errors.New("no user ID found in cookie")
+		return
+	}
+	// Session values are map[string]interface{}, so we need to
+	// cast and check the type.
+	runnerID, ok := storedRunnerID.(int)
+	if !ok {
+		err = errors.New("user ID was not an integer")
+		return
+	}
+	user, err = getRunnerByID(runnerID)
+	return
+}
+
 // renderContent parses the content (given as a template) and puts it into our base template.
 // The control of the input data is handled by the handlers in handlers.go
-func renderContent(t string, w http.ResponseWriter, data interface{}) {
+func renderContent(t string, r *http.Request, w http.ResponseWriter, data interface{}) {
 	// Besides whatever page specific content we have (given in `data`), we always want to render
 	// a list of categories.
 	type templateData struct {
 		MainCategories      []category
 		ChallengeCategories []category
+		ActiveUser          runner
 		PageContents        interface{}
 	}
-	templateDataVar := templateData{getMainCategories(), getChallengeCategories(), data}
+	user, _ := getActiveUser(r)
+	templateDataVar := templateData{getMainCategories(), getChallengeCategories(), user, data}
 	err := templates[t].ExecuteTemplate(w, "base", templateDataVar)
 	if err != nil {
 		log.Println(err)
 	}
-}
-
-// getFormValue returns the value of a given POST parameter if non-empty
-func getFormValue(r *http.Request, key string) (string, error) {
-	formValue, ok := r.Form[key]
-	if ok {
-		return formValue[0], nil
-	}
-	return "", errors.New(key + " was not a POST parameter")
 }
 
 // initializeHandlers sets up the relevant handlers for all possible
@@ -86,6 +117,7 @@ func initializeHandlers() {
 
 func main() {
 	err := initializeTemplates()
+	initializeCookieStore()
 	if err != nil {
 		log.Fatal("Could not initialise templates: ", err)
 	}

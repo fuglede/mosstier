@@ -10,7 +10,7 @@ import (
 
 // aboutHandler handles GET requests to "/about"
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	renderContent("tmpl/about.html", w, nil)
+	renderContent("tmpl/about.html", r, w, nil)
 }
 
 // categoryHandler handles GET requests to "/category*"
@@ -25,6 +25,7 @@ func categoryHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Could not get runs: ", err)
 		http.Error(w, "Internal server error", 500)
+		return
 	}
 	highlightedRunner := vars["runner"]
 	type categoryData struct {
@@ -33,7 +34,7 @@ func categoryHandler(w http.ResponseWriter, r *http.Request) {
 		HighlightedRunner string
 	}
 	data := categoryData{cat, runs, highlightedRunner}
-	renderContent("tmpl/category.html", w, data)
+	renderContent("tmpl/category.html", r, w, data)
 }
 
 // contactHandler handles GET and POST requests to "/contact"
@@ -81,7 +82,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	renderContent("tmpl/contact.html", w, contactData{mailSent, errorString})
+	renderContent("tmpl/contact.html", r, w, contactData{mailSent, errorString})
 }
 
 // frontPageHandler handles GET requests to "/"
@@ -119,7 +120,7 @@ func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 		classWithRecords{"Challenge categories", challengeWRs},
 	}
 	data := frontPageData{readNews(), worldRecords}
-	renderContent("tmpl/frontpage.html", w, data)
+	renderContent("tmpl/frontpage.html", r, w, data)
 }
 
 // loginHandler handles GET and POST requests to "/login"
@@ -130,8 +131,27 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	success := false
 	var errorString string
+
+	if r.Method == "POST" {
+		user, err := loginParser(r)
+		if err != nil {
+			errorString = err.Error()
+		} else {
+			session, err := cookieStore.Get(r, "login")
+			if err != nil {
+				log.Println(err)
+				http.Error(w, "Internal server error", 500)
+				return
+			}
+			session.Values["userID"] = user.ID
+			session.Save(r, w)
+			success = true
+		}
+	}
+
 	data := loginData{success, errorString}
-	renderContent("tmpl/login.html", w, data)
+
+	renderContent("tmpl/login.html", r, w, data)
 }
 
 // passwordResetHandler handles GET and POST requests to "/password-reset"
@@ -161,7 +181,13 @@ func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				errorString += "Could not find any user with that combination of username and email. "
 			} else {
-				newPassword := generatePassword()
+				newPassword, err := generatePassword()
+				if err != nil {
+					log.Println(err)
+					http.Error(w, "Internal server error", 500)
+					return
+				}
+				log.Println(newPassword)
 				// Send a mail to the user with the password, before attempting to update it
 				err = user.sendMail("Password reset", "Hi "+user.Username+". Someone (hopefully you) requested "+
 					"a new password for you on Moss Tier. Here's your new one: "+newPassword)
@@ -169,7 +195,7 @@ func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 					errorString += "Could not send you an email with your new password."
 					log.Println(err)
 				} else {
-					err = user.updatePassword(generatePassword())
+					err = user.updatePassword(newPassword)
 					if err != nil {
 						errorString += "Could not update your password due to an unexpected error. "
 						log.Println(err)
@@ -180,7 +206,7 @@ func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	renderContent("tmpl/passwordreset.html", w, passwordResetData{passwordReset, errorString})
+	renderContent("tmpl/passwordreset.html", r, w, passwordResetData{passwordReset, errorString})
 }
 
 // profileHandler handles GET requests to "/profile*"
@@ -208,7 +234,7 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 		Runs   []run
 	}
 	data := profileData{thisRunner, runs}
-	renderContent("tmpl/profile.html", w, data)
+	renderContent("tmpl/profile.html", r, w, data)
 }
 
 // registerHandler handles GET and POST requests to "/register"
@@ -265,7 +291,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := registerData{success, errorString}
-	renderContent("tmpl/register.html", w, data)
+	renderContent("tmpl/register.html", r, w, data)
 }
 
 // reportHandler handles GET and POST requests to /report*
@@ -317,10 +343,10 @@ func reportHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := reportData{run, success, errorString}
-	renderContent("tmpl/report.html", w, data)
+	renderContent("tmpl/report.html", r, w, data)
 }
 
 // rulesHandler handles GET requests to "/rules"
 func rulesHandler(w http.ResponseWriter, r *http.Request) {
-	renderContent("tmpl/rules.html", w, getAllCategories())
+	renderContent("tmpl/rules.html", r, w, getAllCategories())
 }
