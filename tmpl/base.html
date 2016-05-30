@@ -18,8 +18,14 @@
       	     <h1><a href="/">Moss Tier</a></h1>
       	   </div>
       	   <div class="col-md-4 header-login"><p>
-      	     <span class="tab-space"><a href="/login">Login</a></span>
-      	     <span><a href="/register">Register</a></span>
+             {{ if .UserLoggedIn }}
+               <span class="tab-space"><a href="/profile/{{ .ActiveUser.ID }}">{{ .ActiveUser.Username }}</a></span> 
+               <span class="tab-space"><a href="/submit-run">Submit run</a></span>
+               <span><a href="/log-out">Log out</a></span>
+             {{ else }}
+               <span class="tab-space"><a href="/login">Login</a></span>
+               <span><a href="/register">Register</a></span>
+             {{ end }}
       	   </p></div>
         </div>
       </div>
