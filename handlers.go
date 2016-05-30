@@ -135,6 +135,23 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/login.html", r, w, data)
 }
 
+// logOutHandler handles GET requests to "/log-out"
+func logOutHandler(w http.ResponseWriter, r *http.Request) {
+	// A natural way to log out would be to set the session
+	// cookie max-age to -1, but that adds an unnecessary layer
+	// of complexity for when the user wants to log back in.
+	// Instead we just change the user to one that doesn't exist.
+	session, err := cookieStore.Get(r, "login")
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+	session.Values["userID"] = 0
+	session.Save(r, w)
+	renderContent("tmpl/logout.html", r, w, nil)
+}
+
 // passwordResetHandler handles GET and POST requests to "/password-reset"
 func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 	type passwordResetData struct {
