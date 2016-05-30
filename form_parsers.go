@@ -129,3 +129,17 @@ func registerFormParser(r *http.Request) (string, string, string, error) {
 	}
 	return username, email, password, nil
 }
+
+// reportFormParser parses the form for reporting runs, and returns
+// the explanation given by the reporter on success
+func reportFormParser(r *http.Request) (string, error) {
+	err := r.ParseForm()
+	if err != nil {
+		return "", errors.New("Could not parse form contents.")
+	}
+	explanation, err := getFormValue(r, "explanation")
+	if err != nil || explanation == "" {
+		return "", errors.New("Explanation given can not be empty.")
+	}
+	return explanation, nil
+}

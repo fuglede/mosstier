@@ -255,25 +255,20 @@ func reportHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "POST" {
-		err = r.ParseForm()
+		explanation, err := reportFormParser(r)
 		if err != nil {
-			errorString += "Could not parse form contents. "
+			errorString = err.Error()
 		} else {
-			explanation, err := getFormValue(r, "explanation")
-			if err != nil || explanation == "" {
-				errorString += "Explanation given can not be empty. "
+			err = sendMails(config.Moderators, "Moss Tier run reported",
+				"Hi Moss Tier moderator. The run by "+run.Runner.Username+" in the "+
+					"category "+run.Category.Name+" (id "+strconv.Itoa(runID)+") "+
+					"has been reported as violating the rules. Could you check it "+
+					"out and flag the run if needed? The explanation they gave was "+
+					"\""+explanation+"\"")
+			if err != nil {
+				errorString += "Could not send mail to moderators. Please try again later. "
 			} else {
-				err = sendMails(config.Moderators, "Moss Tier run reported",
-					"Hi Moss Tier moderator. The run by "+run.Runner.Username+" in the "+
-						"category "+run.Category.Name+" (id "+strconv.Itoa(runID)+") "+
-						"has been reported as violating the rules. Could you check it "+
-						"out and flag the run if needed? The explanation they gave was "+
-						"\""+explanation+"\"")
-				if err != nil {
-					errorString += "Could not send mail to moderators. Please try again later. "
-				} else {
-					success = true
-				}
+				success = true
 			}
 		}
 	}
