@@ -108,6 +108,13 @@ span.tab-space {
 	text-align: right;
 }
 
+.header-login a {
+	color: #DBD3D1;
+}
+.header-login a:hover {
+	color: white;
+}
+
 .header p {
 	text-transform: uppercase;
 }
