@@ -5,7 +5,7 @@
   <h3>
     {{ .Username }}&nbsp;&nbsp;&nbsp;&nbsp;<img height="24" src="/img/spelunkers/{{ .Spelunker }}.png" />
     {{ if .Country }}
-      <img src="/img/flags/{{ .Country }}.png" title="{{ .Country }}" />
+      <img src="/img/flags/{{ .Country }}.png" alt="{{ $.PageContents.Runner.FormatCountry }}" title="{{ $.PageContents.Runner.FormatCountry }}" />
     {{ end }}
     {{ if eq .ID $.ActiveUser.ID }}
       &nbsp;&nbsp;&nbsp;&nbsp;<a href="/edit-profile">edit</a>

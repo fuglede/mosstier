@@ -108,3 +108,8 @@ func (r *runner) sendMail(subject, body string) error {
 	err := sendMail(r.Email, subject, body)
 	return err
 }
+
+// formatCountry produces the full name of the runner's chosen country
+func (r *runner) FormatCountry() string {
+	return countries[r.Country]
+}

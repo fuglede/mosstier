@@ -99,6 +99,7 @@ func main() {
 		log.Fatal("Could not initialise database: ", err)
 	}
 	readSpelunkerNames()
+	readCountries()
 
 	initializeHandlers()
 

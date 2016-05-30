@@ -29,7 +29,7 @@
         <tr>
           <td>{{ .Category.Name }}</td>
       <td>
-        <img src="/img/flags/{{ .Runner.Country }}.png" class="spelunker" alt="{{ .Runner.Country }}" /> <a href="/profile/{{ .Runner.ID }}">{{ .Runner.Username }}</a>
+        <img src="/img/flags/{{ .Runner.Country }}.png" class="spelunker" alt="{{ .Runner.FormatCountry }}" title="{{ .Runner.FormatCountry }}" /> <a href="/profile/{{ .Runner.ID }}">{{ .Runner.Username }}</a>
       </td>
       <td>{{ .FormatScore }}</td>
       <td>{{ .FormatLevel }}</td>

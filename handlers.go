@@ -230,10 +230,10 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", 500)
 	}
 	type profileData struct {
-		Runner runner
+		Runner *runner
 		Runs   []run
 	}
-	data := profileData{thisRunner, runs}
+	data := profileData{&thisRunner, runs}
 	renderContent("tmpl/profile.html", r, w, data)
 }
 
