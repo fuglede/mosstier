@@ -47,26 +47,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	var mailSent = false
 	var errorString string
 	if r.Method == "POST" {
-		err := r.ParseForm()
-		if err != nil {
-			errorString += "Could not read form contents. "
-		}
-		name, err := getFormValue(r, "name")
-		if err != nil || name == "" {
-			errorString += "Name field can not be empty. "
-		}
-		email, err := getFormValue(r, "email")
-		if err != nil {
-			errorString += "Could not parse email. "
-		}
-		subject, err := getFormValue(r, "subject")
-		if err != nil || subject == "" {
-			errorString += "Subject field can not be empty. "
-		}
-		message, err := getFormValue(r, "message")
-		if err != nil || message == "" {
-			errorString += "Message field can not be empty. "
-		}
+		name, email, subject, message, err := contactFormParser(r)
 		if errorString == "" {
 			subject := "Moss Tier contact form message: " + subject
 			mailBody := "From: " + name + "\r\n"

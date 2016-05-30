@@ -17,6 +17,32 @@ func getFormValue(r *http.Request, key string) (string, error) {
 
 // Below follows parsers for all forms on the websit, ordered alphabetically.
 
+// contactFormParser parses the contact form, and returns the name, email,
+// subject, and message on success.
+func contactFormParser(r *http.Request) (string, string, string, string, error) {
+	err := r.ParseForm()
+	if err != nil {
+		return "", "", "", "", errors.New("Could not read form contents.")
+	}
+	name, err := getFormValue(r, "name")
+	if err != nil || name == "" {
+		return "", "", "", "", errors.New("Name field can not be empty.")
+	}
+	email, err := getFormValue(r, "email")
+	if err != nil {
+		return "", "", "", "", errors.New("Could not parse email.")
+	}
+	subject, err := getFormValue(r, "subject")
+	if err != nil || subject == "" {
+		return "", "", "", "", errors.New("Subject field can not be empty.")
+	}
+	message, err := getFormValue(r, "message")
+	if err != nil || message == "" {
+		return "", "", "", "", errors.New("Message field can not be empty.")
+	}
+	return name, email, subject, message, nil
+}
+
 // loginFormParser parses POST requests to "/login". Returns the
 // user to log in on success.
 func loginFormParser(r *http.Request) (runner, error) {
