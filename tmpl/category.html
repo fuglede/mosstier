@@ -18,7 +18,7 @@
   </thead>
   <tbody>
     {{ range .PageContents.Runs }}
-      <tr{{ if eq .Runner.Username $.PageContents.HighlightedRunner }} class="success"{{ end }}>
+      <tr{{ if eq .Runner.Username $.ActiveUser.Username }} class="info"{{ else if eq .Runner.Username $.PageContents.HighlightedRunner }} class="success"{{ end }}>
         <td>{{ .RankInCategory }}</td>
 		    <td>
 		      <img src="/img/flags/{{ .Runner.Country }}.png" class="spelunker" alt="{{ .Runner.Country }}" /> <a href="/profile/{{ .Runner.ID }}">{{ .Runner.Username }}</a>
