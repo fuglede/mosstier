@@ -7,6 +7,9 @@
     {{ if .Country }}
       <img src="/img/flags/{{ .Country }}.png" title="{{ .Country }}" />
     {{ end }}
+    {{ if eq .ID $.ActiveUser.ID }}
+      &nbsp;&nbsp;&nbsp;&nbsp;<a href="/edit-profile">edit</a>
+    {{ end }}
   </h3>
   <br />
   {{ if .YouTube }}
