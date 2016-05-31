@@ -67,6 +67,7 @@ func initializeHandlers() {
 	http.Handle("/js/", staticHandler)
 
 	router := mux.NewRouter()
+	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 	router.HandleFunc("/", frontPageHandler)
 	router.HandleFunc("/about", aboutHandler)
 	router.HandleFunc("/category/{categoryName:[a-z]+}", categoryHandler)

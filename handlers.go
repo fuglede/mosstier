@@ -188,6 +188,12 @@ func logOutHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/logout.html", r, w, nil)
 }
 
+// notFoundHandler handles all 404s
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(404)
+	renderContent("tmpl/404.html", r, w, nil)
+}
+
 // passwordResetHandler handles GET and POST requests to "/password-reset"
 func passwordResetHandler(w http.ResponseWriter, r *http.Request) {
 	type passwordResetData struct {
