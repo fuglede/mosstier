@@ -79,6 +79,25 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/contact.html", r, w, data)
 }
 
+// editProfileHandler handles GET requests to "/edit-profile"
+func editProfileHandler(w http.ResponseWriter, r *http.Request) {
+	// First, let's make sure that the user is logged in
+	if _, err := getActiveUser(r); err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	type editProfileData struct {
+		Success    bool
+		Error      string
+		Countries  map[string]string
+		Spelunkers []spelunker
+	}
+	success := false
+	var errorString string
+	data := editProfileData{success, errorString, countries, spelunkers}
+	renderContent("tmpl/editprofile.html", r, w, data)
+}
+
 // frontPageHandler handles GET requests to "/"
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 	// We split the world records into t heir two classes. Rather

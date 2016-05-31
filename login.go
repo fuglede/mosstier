@@ -6,7 +6,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 )
 
@@ -15,8 +14,10 @@ import (
 var cookieStore *sessions.CookieStore
 
 func initializeCookieStore() {
-	cookieStore = sessions.NewCookieStore(securecookie.GenerateRandomKey(64),
-		securecookie.GenerateRandomKey(32))
+	cookieStore = sessions.NewCookieStore([]byte("hest"))
+
+	//cookieStore = sessions.NewCookieStore(securecookie.GenerateRandomKey(64),
+	//	securecookie.GenerateRandomKey(32))
 	cookieStore.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   0, // Lasts until end of session

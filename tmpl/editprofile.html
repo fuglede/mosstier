@@ -1,0 +1,117 @@
+{{ define "title" }}Edit your profile{{ end }}
+{{ define "content" }}
+<h2>Edit your profile</h2>
+
+{{ if .PageContents.Error }}
+<p>
+  <span class="bold">Error</span>: {{ .PageContents.Error }}
+</p>
+{{ end }}
+
+{{ if .PageContents.Success }}
+<p>
+  <span class="bold">Success</span>: Profile successfully updated.
+</p>
+{{ end }}
+
+<form action="/edit-profile" class="form-horizontal" method="post">
+<div class="form-group">
+    <label for="inputUsername" class="col-sm-2 control-label">Username:</label>
+    <div class="col-sm-3">
+    <input type="text" class="form-control" id="inputUsername" name="username" placeholder="Username" value="{{ .ActiveUser.Username }}">
+    </div>
+</div>
+<div class="form-group">
+    <label for="inputEmail" class="col-sm-2 control-label">Email:</label>
+    <div class="col-sm-3">
+    <input type="email" class="form-control" id="inputEmail" name="email" placeholder="mail@example.com" value="{{ .ActiveUser.Email }}">
+    </div>
+</div>
+<div class="form-group">
+    <label for="inputCountry" class="col-sm-2 control-label">Country:</label>
+    <div class="col-sm-3">
+    <select class="form-control" id="inputCountry" name="country">
+      {{ range $abbreviation, $country := .PageContents.Countries }}
+        <option value="{{ $abbreviation }}">{{ $country }}</option>
+      {{ end }}
+    </select>
+    </div>
+</div>
+<div class="form-group">
+    <label for="inputSpelunker" class="col-sm-2 control-label">Spelunker:</label>
+    <div class="col-sm-3">
+    <select class="form-control" id="inputSpelunker" name="spelunker">
+      {{ range .PageContents.Spelunkers }}
+        <option value="{{ .ID }}">{{ .Name }}</option>
+      {{ end }}
+    </select>
+    </div>
+</div>
+<div class="form-group">
+    <label for="inputSteam64" class="col-sm-2 control-label">Steam64ID:</label>
+    <div class="col-sm-3">
+    <input type="text" class="form-control" id="inputSteam64" name="steam64" placeholder="765..." value="{{ .ActiveUser.Steam }}">
+    </div>
+    <div class="col-sm-2">(<a href="https://steamidfinder.ru/">Steam64 finder</a>)</div>
+</div>
+<div class="form-group">
+    <label for="inputPSN" class="col-sm-2 control-label">PSN profile:</label>
+    <div class="col-sm-3">
+    <input type="text" class="form-control" id="inputPSN" name="psn" value="{{ .ActiveUser.Psn }}">
+    </div>
+</div>
+<div class="form-group">
+    <label for="inputTwitch" class="col-sm-2 control-label">Twitch profile:</label>
+    <div class="col-sm-3">
+    <input type="text" class="form-control" id="inputTwitch" name="twitch" value="{{ .ActiveUser.Twitch }}">
+    </div>
+</div>
+<div class="form-group">
+    <label for="inputYouTube" class="col-sm-2 control-label">YouTube profile:</label>
+    <div class="col-sm-3">
+    <input type="text" class="form-control" id="inputYouTube" name="youtube" value="{{ .ActiveUser.YouTube }}">
+    </div>
+</div>
+<div class="form-group">
+    <p><label for="inputFreeText">Profile text:</label></p>
+    <div class="col-sm-7">
+    <textarea type="text" rows="10" class="form-control" id="inputFreeText" name="freetext">{{ .ActiveUser.FreeText }}</textarea>
+    </div>
+</div>
+<div class="form-group">
+    <label for="inputPassword" class="col-sm-2 control-label">Change password:</label>
+    <div class="col-sm-3">
+    <input type="text" class="form-control" id="inputPassword" name="password">
+    </div>
+    <div class="col-sm-2">(leave blank to leave unchanged)</div>
+</div>
+<div class="form-group">
+    <label for="inputPassword2" class="col-sm-2 control-label">Reenter password:</label>
+    <div class="col-sm-3">
+    <input type="text" class="form-control" id="inputPassword2" name="password2">
+    </div>
+</div>
+<p>Receive email notifications ...</p>
+<div class="checkbox">
+  <label>
+    <input type="checkbox" id="flagCheckbox" value="runsflagged"> ... if one of my submissions is flagged for rule violation,
+  </label>
+</div>
+<div class="checkbox">
+  <label>
+    <input type="checkbox" id="newwrCheckbox" value="newwr"> ... when someone submits a world record run,
+  </label>
+</div>
+<div class="checkbox indented">
+  <label>
+    <input type="checkbox" id="challengewrCheckbox" class="indented" value="challengewrflagged"> ... if the WR is in a challenge category,
+  </label>
+</div>
+<div class="form-group">
+    <div class="col-sm-offset-4 col-sm-1">
+    <button type="submit" class="btn btn-default">Send</button>
+    </div>
+</div>
+</form>
+
+{{ end }}

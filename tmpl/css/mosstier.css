@@ -9,6 +9,7 @@
     font-style: normal;
 
 }
+
 @font-face {
     font-family: 'robotoregular';
     src: url('/font/roboto-regular-webfont.eot');
@@ -20,6 +21,7 @@
     font-style: normal;
 
 }
+
 @font-face {
     font-family: 'robotobold';
     src: url('/font/roboto-bold-webfont.eot');
@@ -111,6 +113,7 @@ span.tab-space {
 .header-login a {
 	color: #DBD3D1;
 }
+
 .header-login a:hover {
 	color: white;
 }
@@ -122,6 +125,10 @@ span.tab-space {
 .footer p {
 	text-align: center;
 	padding-top: 20px;
+}
+
+.indented {
+	padding-left: 40px;
 }
 
 .spelunker {
