@@ -13,7 +13,7 @@ type runner struct {
 	Password       string
 	Email          string
 	Country        string
-	Spelunker      int
+	Spelunker      spelunker
 	Steam          int
 	Psn            string
 	Xbla           string
@@ -33,7 +33,9 @@ func searchRunner(constraints string, values ...interface{}) (r runner, err erro
 		return
 	}
 	defer statement.Close()
-	err = statement.QueryRow(values...).Scan(&r.ID, &r.Username, &r.Password, &r.Email, &r.Country, &r.Spelunker, &r.Steam, &r.Psn, &r.Xbla, &r.Twitch, &r.YouTube, &r.FreeText)
+	var spelunkerID int
+	err = statement.QueryRow(values...).Scan(&r.ID, &r.Username, &r.Password, &r.Email, &r.Country, &spelunkerID, &r.Steam, &r.Psn, &r.Xbla, &r.Twitch, &r.YouTube, &r.FreeText)
+	r.Spelunker, _ = getSpelunkerByID(spelunkerID)
 	return
 }
 

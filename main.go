@@ -39,7 +39,7 @@ func renderContent(t string, r *http.Request, w http.ResponseWriter, data interf
 	type templateData struct {
 		MainCategories      []category
 		ChallengeCategories []category
-		ActiveUser          runner
+		ActiveUser          *runner
 		UserLoggedIn        bool
 		PageContents        interface{}
 	}
@@ -48,7 +48,7 @@ func renderContent(t string, r *http.Request, w http.ResponseWriter, data interf
 	templateDataVar := templateData{
 		getMainCategories(),
 		getChallengeCategories(),
-		user,
+		&user,
 		loggedIn,
 		data}
 	err = templates[t].ExecuteTemplate(w, "base", templateDataVar)
@@ -64,6 +64,7 @@ func initializeHandlers() {
 	http.Handle("/css/", staticHandler)
 	http.Handle("/font/", staticHandler)
 	http.Handle("/img/", staticHandler)
+	http.Handle("/js/", staticHandler)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", frontPageHandler)

@@ -3,7 +3,7 @@
 
 {{ with .PageContents.Runner }}
   <h3>
-    {{ .Username }}&nbsp;&nbsp;&nbsp;&nbsp;<img height="24" src="/img/spelunkers/{{ .Spelunker }}.png" />
+    {{ .Username }}&nbsp;&nbsp;&nbsp;&nbsp;<img height="24" src="/img/spelunkers/{{ .Spelunker.ID }}.png" />
     {{ if .Country }}
       <img src="/img/flags/{{ .Country }}.png" alt="{{ $.PageContents.Runner.FormatCountry }}" title="{{ $.PageContents.Runner.FormatCountry }}" />
     {{ end }}

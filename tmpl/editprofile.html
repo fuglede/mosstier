@@ -1,5 +1,7 @@
 {{ define "title" }}Edit your profile{{ end }}
 {{ define "content" }}
+<script src="/js/editprofile.js"></script>
+<script src="/js/spelunker.js"></script>
 <h2>Edit your profile</h2>
 
 {{ if .PageContents.Error }}
@@ -30,22 +32,28 @@
 <div class="form-group">
     <label for="inputCountry" class="col-sm-2 control-label">Country:</label>
     <div class="col-sm-3">
-    <select class="form-control" id="inputCountry" name="country">
+    <select onchange="change_country(this.value, 'country')" onkeyup="change_country(this.value, 'country')" class="form-control" id="inputCountry" name="country">
       {{ range $abbreviation, $country := .PageContents.Countries }}
-        <option value="{{ $abbreviation }}">{{ $country }}</option>
+        <option value="{{ $abbreviation }}"{{ if eq $abbreviation $.ActiveUser.Country }}selected{{ end }}>{{ $country }}</option>
       {{ end }}
     </select>
     </div>
+    <div class="col-sm-1">
+      <img id="country" src="/img/flags/{{ .ActiveUser.Country }}.png" alt="{{ .ActiveUser.FormatCountry }}" title="{{ .ActiveUser.FormatCountry }}"/>
+    </div>      
 </div>
 <div class="form-group">
     <label for="inputSpelunker" class="col-sm-2 control-label">Spelunker:</label>
     <div class="col-sm-3">
-    <select class="form-control" id="inputSpelunker" name="spelunker">
+    <select onchange="change_spelunker(this.value, 'spelunker')" onkeyup="change_spelunker(this.value, 'spelunker')" class="form-control" id="inputSpelunker" name="spelunker">
       {{ range .PageContents.Spelunkers }}
-        <option value="{{ .ID }}">{{ .Name }}</option>
+        <option value="{{ .ID }}" {{ if eq .Name $.ActiveUser.Spelunker.Name }}selected{{ end }}>{{ .Name }}</option>
       {{ end }}
     </select>
     </div>
+    <div class="col-sm-1">
+      <img id="spelunker" src="/img/spelunkers/{{ .ActiveUser.Spelunker.ID }}.png" alt="{{ .ActiveUser.Spelunker.Name }}" title="{{ .ActiveUser.Spelunker.Name }}"/>
+    </div>      
 </div>
 <div class="form-group">
     <label for="inputSteam64" class="col-sm-2 control-label">Steam64ID:</label>
@@ -73,9 +81,9 @@
     </div>
 </div>
 <div class="form-group">
-    <p><label for="inputFreeText">Profile text:</label></p>
+    <p><label for="inputFreeText">Profile text (<span id="counter"></span>/500 chars):</label></p>
     <div class="col-sm-7">
-    <textarea type="text" rows="10" class="form-control" id="inputFreeText" name="freetext">{{ .ActiveUser.FreeText }}</textarea>
+    <textarea onkeyup="text_area_counter(this)" type="text" rows="10" class="form-control" id="inputFreeText" name="freetext">{{ .ActiveUser.FreeText }}</textarea>
     </div>
 </div>
 <div class="form-group">
@@ -91,7 +99,7 @@
     <input type="text" class="form-control" id="inputPassword2" name="password2">
     </div>
 </div>
-<p>Receive email notifications ...</p>
+<p><label>Receive email notifications ...</label></p>
 <div class="checkbox">
   <label>
     <input type="checkbox" id="flagCheckbox" value="runsflagged"> ... if one of my submissions is flagged for rule violation,
