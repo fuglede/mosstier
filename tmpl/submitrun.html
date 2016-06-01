@@ -1,0 +1,131 @@
+{{ define "title" }}Submit a run{{ end }}
+{{ define "content" }}
+<script src="/js/submitrun.js"></script>
+<script src="/js/spelunker.js"></script>
+<h2>Submit a run</h2>
+<p>
+  Before submitting a run, please make sure to read the <a href="/rules">rules and guidelines</a> to avoid unfortunate deletions. Note also that submitting a run will remove the runs in the same category.
+</p>
+
+{{ if gt .ActiveUser.Steam 0 }}
+    <h3>Automatic completion</h3>
+    <p>
+    You have entered a Steam ID on your profile; should I try to fill out the form automatically?<br />
+    <a href="#" onclick="findResult('score');">Yes, find my highest score!</a><br />
+    <a href="#" onclick="findResult('speed');">Yes, find my best time!</a>
+    
+    <div id="working">Searching; this will take a short while.</div>
+    <div id="error">Error: Couldn't find any data about you; sorry!</div>
+    </p>
+{{ end }}
+
+<h3>Run details</h3>
+
+<form action="/submit-run" class="form-horizontal" method="post">
+<div class="form-group">
+    <label for="inputCategory" class="col-sm-2 control-label">Category:</label>
+    <div class="col-sm-3">
+    <select class="form-control" onkeyup="updateFormType(this.value)" onchange="updateFormType(this.value)" id="inputCategory" name="category">
+      {{ range .PageContents.Categories }}
+        <option value="{{ .ID }}">{{ .Name }}</option>
+      {{ end }}
+    </select>
+    </div>
+</div>
+
+<div class="form-group" id="scorerun">
+    <label for="inputScore" class="col-sm-2 control-label">Score:</label>
+    <div class="col-sm-3">
+      <div class="input-group">        
+        <span class="input-group-addon">$</span>
+        <input type="text" class="form-control" id="inputScore" name="score">
+      </div>
+    </div>
+</div>
+
+<div class="row form-group" id="speedrun">
+    <label for="inputTime" class="col-sm-2 control-label">Time:</label>
+    <div class="form-group col-lg-1">
+        <input type="text" class="form-control-fixed form-control" id="inputMinutes" placeholder="Mins" name="minutes">
+    </div>
+    <div class="form-group col-lg-1">
+        <input type="text" class="form-control-fixed form-control" id="inputSeconds" placeholder="Secs" name="seconds">
+    </div>
+    <div class="form-group col-lg-1">
+        <input type="text" class="form-control-fixed form-control" id="inputMilliseconds" placeholder="Millis" name="milliseconds">
+    </div>
+</div>
+
+
+<div class="row form-group">
+    <label class="col-sm-2 control-label">Level:</label>
+    <div class="col-sm-3">
+        <div class="form-inline">
+            <div class="form-group">
+                <select class="form-control" id="inputWorld" name="world">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-control" id="inputLevel" name="level">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label for="inputSpelunker" class="col-sm-2 control-label">Spelunker:</label>
+    <div class="col-sm-3">
+    <select onchange="changeSpelunker(this.value, 'spelunker')" onkeyup="changeSpelunker(this.value, 'spelunker')" class="form-control" id="inputSpelunker" name="spelunker">
+      {{ range .PageContents.Spelunkers }}
+        <option value="{{ .ID }}" {{ if eq .Name $.ActiveUser.Spelunker.Name }}selected{{ end }}>{{ .Name }}</option>
+      {{ end }}
+    </select>
+    </div>
+    <div class="col-sm-1">
+      <img id="spelunker" src="/img/spelunkers/{{ .ActiveUser.Spelunker.ID }}.png" alt="{{ .ActiveUser.Spelunker.Name }}" title="{{ .ActiveUser.Spelunker.Name }}"/>
+    </div>      
+</div>
+<div class="form-group">
+    <label for="inputPlatform" class="col-sm-2 control-label">Platform:</label>
+    <div class="col-sm-3">
+    <select class="form-control" id="inputPlatform" name="platform">
+        <option value="1">PC</option>
+        <option value="2">PSN</option>
+        <option value="3">XBLA</option>
+    </select>
+    </div>
+</div>
+<div class="form-group">
+    <label for="inputLink" class="col-sm-2 control-label">Video link:</label>
+    <div class="col-sm-3">
+    <input type="text" class="form-control" id="inputLink" name="link" placeholder="https://twitch.tv/...">
+    </div>
+    <div class="col-sm-3">
+      (include https://.)
+    </div>
+</div>
+<div class="form-group">
+    <label for="inputComment" class="col-sm-2 control-label">Short comment:</label>
+    <div class="col-sm-3">
+    <input type="text" class="form-control" id="inputComment" name="comment" onkeyup="commentCounter()">
+    </div>
+    <div class="col-sm-3">
+      (<span id="counter"></span>/30 chars)
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-offset-4 col-sm-1">
+    <button type="submit" class="btn btn-default">Send</button>
+    </div>
+</div>
+</form>
+{{ end }}

@@ -84,6 +84,8 @@ func initializeHandlers() {
 	router.HandleFunc("/register", registerHandler)
 	router.HandleFunc("/report/{runID:[0-9]+}", reportHandler)
 	router.HandleFunc("/rules", rulesHandler)
+	router.HandleFunc("/steam-lookup", steamLookupHandler)
+	router.HandleFunc("/submit-run", submitRunHandler)
 	http.Handle("/", router)
 }
 

@@ -1,26 +1,26 @@
 $( document ).ready(function() {
-    var currentString = $("textarea").val()
-    $("#counter").text(currentString.length);
+    textAreaCounter();
+    changeEmailwr();
 });
 
-function change_country(flag, elementID){
+function changeCountry(flag, elementID){
     document.getElementById(elementID).src =
         "/img/flags/"+flag+".png";
 }
 
-function change_emailwr() {
-    var x = $("#emailChallenge")[0];
-    var y = $("#emailwr")[0];
+function changeEmailwr() {
+    var x = $("#challengewrCheckbox")[0];
+    var y = $("#newwrCheckbox")[0];
     x.disabled = !y.checked;
     x.checked = y.checked;
 }
 
-function text_area_counter() {
+function textAreaCounter() {
     var currentString = $("textarea").val()
     $("#counter").text(currentString.length);
     if (currentString.length <= 500)  {
-        $("#counter")[0].setAttribute('style','color:#333');
+        $("#counter").css("color", "#333");
     } else {
-        $("#counter")[0].setAttribute('style','color:red');
+        $("#counter").css("color", "red");
     }
 }

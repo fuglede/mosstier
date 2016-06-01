@@ -364,3 +364,13 @@ func reportHandler(w http.ResponseWriter, r *http.Request) {
 func rulesHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/rules.html", r, w, getAllCategories())
 }
+
+// submitRunHandler handles GET requests to "/submit-run"
+func submitRunHandler(w http.ResponseWriter, r *http.Request) {
+	type submitRunData struct {
+		Categories []category
+		Spelunkers []spelunker
+	}
+	data := submitRunData{getAllCategories(), spelunkers}
+	renderContent("tmpl/submitrun.html", r, w, data)
+}
