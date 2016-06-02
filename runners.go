@@ -111,6 +111,16 @@ func (r *runner) sendMail(subject, body string) error {
 	return err
 }
 
+// isModerator returns true iff the user is a site moderator
+func (r *runner) isModerator() bool {
+	for _, moderatorID := range config.Moderators {
+		if moderatorID == r.ID {
+			return true
+		}
+	}
+	return false
+}
+
 // formatCountry produces the full name of the runner's chosen country
 func (r *runner) FormatCountry() string {
 	return countries[r.Country]

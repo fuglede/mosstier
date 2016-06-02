@@ -7,5 +7,5 @@
 	"smtpUsername": "user@example.com",
 	"smtpPassword": "hunter2",
 	"mailSender": "Moss Tier <noreply@example.com>",
-	"moderators": ["moderator1@example.com", "moderator2@example.com"]
+	"moderatorIDs": [2, 5] 
 }

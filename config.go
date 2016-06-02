@@ -7,15 +7,15 @@ import (
 )
 
 type configType struct {
-	DbConnection  string   `json:"dbConnection"`
-	WebserverPort int      `json:"webserverPort"`
-	AdminEmail    string   `json:"adminEmail"`
-	SmtpHost      string   `json:"smtpHost"`
-	SmtpPort      int      `json:"smtpPort"`
-	SmtpUsername  string   `json:"smtpUsername"`
-	SmtpPassword  string   `json:"smtpPassword"`
-	MailSender    string   `json:"mailSender"`
-	Moderators    []string `json:"moderators"`
+	DbConnection  string `json:"dbConnection"`
+	WebserverPort int    `json:"webserverPort"`
+	AdminEmail    string `json:"adminEmail"`
+	SMTPHost      string `json:"smtpHost"`
+	SMTPPort      int    `json:"smtpPort"`
+	SMTPUsername  string `json:"smtpUsername"`
+	SMTPPassword  string `json:"smtpPassword"`
+	MailSender    string `json:"mailSender"`
+	Moderators    []int  `json:"moderatorIDs"`
 }
 
 var config configType

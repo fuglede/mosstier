@@ -31,13 +31,13 @@ func sendMail(recipient string, subject string, body string) (err error) {
 
 	auth := smtp.PlainAuth(
 		"",
-		config.SmtpUsername,
-		config.SmtpPassword,
-		config.SmtpHost,
+		config.SMTPUsername,
+		config.SMTPPassword,
+		config.SMTPHost,
 	)
 
 	err = smtp.SendMail(
-		fmt.Sprintf("%s:%d", config.SmtpHost, config.SmtpPort),
+		fmt.Sprintf("%s:%d", config.SMTPHost, config.SMTPPort),
 		auth,
 		config.MailSender,
 		[]string{recipient},

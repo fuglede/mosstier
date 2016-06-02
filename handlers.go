@@ -342,7 +342,12 @@ func reportHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			errorString = err.Error()
 		} else {
-			err = sendMails(config.Moderators, "Moss Tier run reported",
+			moderatorEmails := []string{}
+			for _, moderatorID := range config.Moderators {
+				moderator, _ := getRunnerByID(moderatorID)
+				moderatorEmails = append(moderatorEmails, moderator.Email)
+			}
+			err = sendMails(moderatorEmails, "Moss Tier run reported",
 				"Hi Moss Tier moderator. The run by "+run.Runner.Username+" in the "+
 					"category "+run.Category.Name+" (id "+strconv.Itoa(runID)+") "+
 					"has been reported as violating the rules. Could you check it "+
