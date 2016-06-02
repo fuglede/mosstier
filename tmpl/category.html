@@ -15,6 +15,7 @@
         <th>Video</th>
         <th>Comment</th>
         <th></th>
+        {{ if .ActiveUser.IsModerator }}<th></th>{{ end }}
       </tr>
     </thead>
     <tbody>
@@ -30,6 +31,9 @@
           <td><a href="{{ .Link }}">Watch</a></td>
           <td>{{ .Comment }}</td>
           <td><a href="/report/{{ .ID }}">Report</a>
+          {{ if $.ActiveUser.IsModerator }}
+            <td><a href="/flag-run/{{ .ID }}">Flag</a></td>
+          {{ end }}
         </tr>
       {{ end }}
     </tbody>

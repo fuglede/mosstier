@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -37,7 +38,7 @@ func getAllWorldRecords() ([]run, error) {
 
 // getRunsByCategory returns the top `limit` runs in a given category. If `limit` is 0, returns all runs.
 func getRunsByCategory(category category, limit int64) (runs []run, err error) {
-	query := "SELECT runs.id, runs.score, runs.level, runs.link, runs.spelunker, runs.date, runs.comment, users.id, users.username, users.country FROM runs INNER JOIN users ON runs.runner = users.id WHERE runs.cat = ? ORDER BY runs.score"
+	query := "SELECT runs.id, runs.score, runs.level, runs.link, runs.spelunker, runs.date, runs.comment, users.id, users.username, users.country FROM runs INNER JOIN users ON runs.runner = users.id WHERE runs.cat = ? AND runs.flag = '' ORDER BY runs.score"
 	if category.Goal == "Score" {
 		query += " DESC"
 	}
@@ -72,13 +73,13 @@ func getRunsByCategory(category category, limit int64) (runs []run, err error) {
 	return
 }
 
-// getRunsByRunnerID produces a slide of all runs registered for a given runner
+// getRunsByRunnerID produces a slice of all runs registered for a given runner,
 func getRunsByRunnerID(runnerID int) (runs []run, err error) {
 	runner, err := getRunnerByID(runnerID)
 	if err != nil {
 		return
 	}
-	query := "SELECT id, cat, score, level, link, spelunker, date, comment FROM runs WHERE runner = ? ORDER BY cat"
+	query := "SELECT id, cat, score, level, link, spelunker, date, comment, flag FROM runs WHERE runner = ? ORDER BY cat"
 	statement, err := db.Prepare(query)
 	if err != nil {
 		return
@@ -92,7 +93,7 @@ func getRunsByRunnerID(runnerID int) (runs []run, err error) {
 		var r run
 		var spelunkerID int
 		var categoryID int
-		err = rows.Scan(&r.ID, &categoryID, &r.Score, &r.Level, &r.Link, &spelunkerID, &r.Time, &r.Comment)
+		err = rows.Scan(&r.ID, &categoryID, &r.Score, &r.Level, &r.Link, &spelunkerID, &r.Time, &r.Comment, &r.Flag)
 		if err != nil {
 			return
 		}
@@ -104,6 +105,7 @@ func getRunsByRunnerID(runnerID int) (runs []run, err error) {
 	return
 }
 
+// getRunByID returns the run with a given integral ID.
 func getRunByID(runID int) (r run, err error) {
 	stmt, err := db.Prepare("SELECT runs.score, runs.cat, users.username FROM runs INNER JOIN users ON runs.runner = users.id WHERE runs.id = ?")
 	if err != nil {
@@ -112,9 +114,37 @@ func getRunByID(runID int) (r run, err error) {
 	defer stmt.Close()
 	var categoryID int
 	err = stmt.QueryRow(runID).Scan(&r.Score, &categoryID, &r.Runner.Username)
+	r.Runner, _ = getRunnerByUsername(r.Runner.Username)
 	r.ID = runID
 	r.Category, _ = getCategoryByID(categoryID)
 	return
+}
+
+// Flag flags the run, removing it from the leaderboards, and
+// informing the runner the reason why.
+func (r *run) flag(reason string) error {
+	query, err := db.Prepare("UPDATE runs SET flag = ? WHERE id = ?")
+	if err != nil {
+		return errors.New("Could not prepare database: " + err.Error())
+	}
+	_, err = query.Exec(reason, r.ID)
+	if err != nil {
+		return errors.New("Could not perform database query: " + err.Error())
+	}
+	// Now inform the user if they have asked to be informed
+	fmt.Println(r.Runner.EmailFlag)
+	fmt.Println(r.Runner)
+	if r.Runner.EmailFlag {
+		mailBody := "Hi %s.\n\nThis is to inform you that your Moss Tier run " +
+			"in the category %s has been flagged as violating the rules by one " +
+			"of the moderators. The reason they gave was the following:\n\n%s"
+		err = r.Runner.sendMail("Moss Tier run flagged",
+			fmt.Sprintf(mailBody, r.Runner.Username, r.Category.Name, reason))
+		if err != nil {
+			return errors.New("Flagged run but could not inform user: " + err.Error())
+		}
+	}
+	return nil
 }
 
 // FormatLevel takes the (one-indexed) number of a level (e.g. 5) and produces

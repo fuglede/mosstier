@@ -98,6 +98,55 @@ func editProfileHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/editprofile.html", r, w, data)
 }
 
+// flagRunHandler handles GET and POST requests to /flag-run*
+func flagRunHandler(w http.ResponseWriter, r *http.Request) {
+	// Before doing anything, let us ensure that the current user
+	// is allowed to flag runs.
+	if activeUser, err := getActiveUser(r); !activeUser.IsModerator() || err != nil {
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+
+	type flagRunData struct {
+		Run     run
+		Flagged bool
+		Error   string
+	}
+	flagged := false
+
+	var errorString string
+	vars := mux.Vars(r)
+	runID, err := strconv.Atoi(vars["runID"])
+	if err != nil {
+		log.Println("Could not parse run ID: ", err)
+		http.NotFound(w, r)
+		return
+	}
+	run, err := getRunByID(runID)
+	if err != nil {
+		log.Println("Could not find run with given ID: ", err)
+		http.NotFound(w, r)
+		return
+	}
+
+	if r.Method == "POST" {
+		explanation, err := reportFormParser(r) // This is a /bit/ lazy.
+		if err != nil {
+			errorString = err.Error()
+		} else {
+			err = run.flag(explanation)
+			if err != nil {
+				errorString += "Could not flag the run:" + err.Error()
+			} else {
+				flagged = true
+			}
+		}
+	}
+
+	data := flagRunData{run, flagged, errorString}
+	renderContent("tmpl/flagrun.html", r, w, data)
+}
+
 // frontPageHandler handles GET requests to "/"
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
 	// We split the world records into t heir two classes. Rather
@@ -249,16 +298,26 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	runs, err := getRunsByRunnerID(profileID)
+	allRuns, err := getRunsByRunnerID(profileID)
 	if err != nil {
 		log.Println("Could not get runs: ", err)
 		http.Error(w, "Internal server error", 500)
 	}
 	type profileData struct {
-		Runner *runner
-		Runs   []run
+		Runner      *runner
+		Runs        []run
+		FlaggedRuns []run
 	}
-	data := profileData{&thisRunner, runs}
+	unflaggedRuns := []run{}
+	flaggedRuns := []run{}
+	for _, run := range allRuns {
+		if run.Flag != "" {
+			flaggedRuns = append(flaggedRuns, run)
+		} else {
+			unflaggedRuns = append(unflaggedRuns, run)
+		}
+	}
+	data := profileData{&thisRunner, unflaggedRuns, flaggedRuns}
 	renderContent("tmpl/profile.html", r, w, data)
 }
 

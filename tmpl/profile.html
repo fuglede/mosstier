@@ -3,12 +3,12 @@
 
 {{ with .PageContents.Runner }}
   <h3>
-    {{ .Username }}&nbsp;&nbsp;&nbsp;&nbsp;<img height="24" src="/img/spelunkers/{{ .Spelunker.ID }}.png" />
+    {{ .Username }}&nbsp;&nbsp;<img height="24" src="/img/spelunkers/{{ .Spelunker.ID }}.png" />
     {{ if .Country }}
       <img src="/img/flags/{{ .Country }}.png" alt="{{ $.PageContents.Runner.FormatCountry }}" title="{{ $.PageContents.Runner.FormatCountry }}" />
     {{ end }}
     {{ if eq .ID $.ActiveUser.ID }}
-      &nbsp;&nbsp;&nbsp;&nbsp;<a href="/edit-profile">edit</a>
+      &nbsp;&nbsp;<a href="/edit-profile">edit</a>
     {{ end }}
   </h3>
   <br />
@@ -45,6 +45,10 @@
         <th>Spelunker</th>
         <th>Video</th>
         <th>Comment</th>
+        {{ if eq $.ActiveUser.ID $.PageContents.Runner.ID }}
+          <th></th>
+          <th></th>
+        {{ end }}
       </tr>
       </thead>
       <tbody>
@@ -60,6 +64,10 @@
       <td><img src="/img/spelunkers/{{ .Spelunker.ID }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
       <td><a href="{{ .Link }}">Watch</a></td>
           <td>{{ .Comment }}</td>
+          {{ if eq $.ActiveUser.ID $.PageContents.Runner.ID }}
+            <td><a href="/submit-run/{{ .ID }}">Edit</a></td>
+            <td><a href="#/" onclick="deleteRun({{ .ID }})">Delete</a></td>
+          {{ end }}
         </tr>
       {{ end }}
       </tbody>
@@ -68,5 +76,40 @@
 {{ else }}
   This user has not submitted any runs yet.
 {{ end }}
+
+{{ if eq .ActiveUser.ID .PageContents.Runner.ID }}
+  {{ if .PageContents.FlaggedRuns }}
+    <h4>Flagged runs</h4>
+    <p>
+      One or more of your runs have been flagged as being in violation of the site rules;
+      these runs do not appear on the public leaderboards.
+    </p>
+    <div class="table-responsive">
+      <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Time/Score</th>
+          <th>Reason for flag</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      {{ range .PageContents.FlaggedRuns }}
+        <tr>
+          <td>{{ .Category.Name }}</td>
+          <td>{{ .FormatScore }}</td>
+          <td>{{ .Flag }}</td>
+          <td><a href="/submit-run/{{ .ID }}">Edit</a></td>
+          <td><a href="#/" onclick="deleteRun({{ .ID }})">Delete</a></td>
+        </tr>
+      {{ end }}
+      </tbody>
+      </table>
+    </div>
+  {{ end }}
+{{ end }}
+
 
 {{ end }}

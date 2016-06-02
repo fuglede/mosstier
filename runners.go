@@ -27,14 +27,14 @@ type runner struct {
 
 // searchRunner returns a user on the site, found by applying a given filter
 func searchRunner(constraints string, values ...interface{}) (r runner, err error) {
-	query := "SELECT id, username, pass, email, country, spelunker, steam, psn, xbla, twitch, youtube, freetext FROM users " + constraints
+	query := "SELECT id, username, pass, email, country, spelunker, steam, psn, xbla, twitch, youtube, freetext, emailflag, emailwr, emailChallenge FROM users " + constraints
 	statement, err := db.Prepare(query)
 	if err != nil {
 		return
 	}
 	defer statement.Close()
 	var spelunkerID int
-	err = statement.QueryRow(values...).Scan(&r.ID, &r.Username, &r.Password, &r.Email, &r.Country, &spelunkerID, &r.Steam, &r.Psn, &r.Xbla, &r.Twitch, &r.YouTube, &r.FreeText)
+	err = statement.QueryRow(values...).Scan(&r.ID, &r.Username, &r.Password, &r.Email, &r.Country, &spelunkerID, &r.Steam, &r.Psn, &r.Xbla, &r.Twitch, &r.YouTube, &r.FreeText, &r.EmailFlag, &r.EmailWr, &r.EmailChallenge)
 	r.Spelunker, _ = getSpelunkerByID(spelunkerID)
 	return
 }
@@ -112,7 +112,7 @@ func (r *runner) sendMail(subject, body string) error {
 }
 
 // isModerator returns true iff the user is a site moderator
-func (r *runner) isModerator() bool {
+func (r *runner) IsModerator() bool {
 	for _, moderatorID := range config.Moderators {
 		if moderatorID == r.ID {
 			return true

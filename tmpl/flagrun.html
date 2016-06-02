@@ -1,0 +1,36 @@
+{{ define "title" }}Flag run{{ end }}
+{{ define "content" }}
+<h2>Flag run</h2>
+<p>
+  If you are sure that this run violates the <a href="/rules">rules</a> for submission, click the button below to flag it. The user
+  will see the explanation you give, and the run will be removed from the public leaderboards.
+  The run you are flagging is run by {{ .PageContents.Run.Runner.Username }}, in the category {{ .PageContents.Run.Category.Name }}.
+</p>
+
+{{ if .PageContents.Flagged }}
+<p>
+  <span class="bold">Success</span>: The run has been flagged.
+</p>
+{{ end }}
+
+{{ if .PageContents.Error }}
+<p>
+  <span class="bold">Error</span>: {{ .PageContents.Error }}
+</p>
+{{ end }}
+
+<form action="/flag-run/{{ .PageContents.Run.ID }}" class="form-horizontal" method="post">
+  <div class="form-group">
+    <label for="inputExplanation" class="col-sm-2 control-label">Explanation:</label>
+    <div class="col-sm-7">
+      <input type="text" class="form-control" id="inputExplanation" name="explanation" placeholder="Rule broken by run">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">Send</button>
+    </div>
+  </div>
+</form>
+
+{{ end }}
