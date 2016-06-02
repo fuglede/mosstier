@@ -3,35 +3,36 @@
 <h3>{{ .PageContents.Category.Name }}</h3>
 <p><span class="bold">Definition</span>: {{ .PageContents.Category.Definition }}</span>
 <br />
-<table class="table table-condensed">
-	<thead>
-    <tr>
-      <th>Rank</th>
-      <th>Player</th>
-      <th>{{ .PageContents.Category.Goal }}</th>
-      <th>Level</th>
-      <th>Spelunker</th>
-      <th>Video</th>
-      <th>Comment</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {{ range .PageContents.Runs }}
-      <tr{{ if eq .Runner.Username $.ActiveUser.Username }} class="info"{{ else if eq .Runner.Username $.PageContents.HighlightedRunner }} class="success"{{ end }}>
-        <td>{{ .RankInCategory }}</td>
-		    <td>
-		      <img src="/img/flags/{{ .Runner.Country }}.png" class="spelunker" alt="{{ .Runner.FormatCountry }}" title="{{ .Runner.FormatCountry }}" /> <a href="/profile/{{ .Runner.ID }}">{{ .Runner.Username }}</a>
-        </td>
-        <td>{{ .FormatScore }}</td>
-        <td>{{ .FormatLevel }}</td>
-        <td><img src="/img/spelunkers/{{ .Spelunker.ID }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
-        <td><a href="{{ .Link }}">Watch</a></td>
-        <td>{{ .Comment }}</td>
-        <td><a href="/report/{{ .ID }}">Report</a>
+<div class="table-responsive">
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Player</th>
+        <th>{{ .PageContents.Category.Goal }}</th>
+        <th>Level</th>
+        <th>Spelunker</th>
+        <th>Video</th>
+        <th>Comment</th>
+        <th></th>
       </tr>
-    {{ end }}
-  </tbody>
-</table>
-  
+    </thead>
+    <tbody>
+      {{ range .PageContents.Runs }}
+        <tr{{ if eq .Runner.Username $.ActiveUser.Username }} class="info"{{ else if eq .Runner.Username $.PageContents.HighlightedRunner }} class="success"{{ end }}>
+          <td>{{ .RankInCategory }}</td>
+          <td>
+            <img src="/img/flags/{{ .Runner.Country }}.png" class="spelunker" alt="{{ .Runner.FormatCountry }}" title="{{ .Runner.FormatCountry }}" /> <a href="/profile/{{ .Runner.ID }}">{{ .Runner.Username }}</a>
+          </td>
+          <td>{{ .FormatScore }}</td>
+          <td>{{ .FormatLevel }}</td>
+          <td><img src="/img/spelunkers/{{ .Spelunker.ID }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
+          <td><a href="{{ .Link }}">Watch</a></td>
+          <td>{{ .Comment }}</td>
+          <td><a href="/report/{{ .ID }}">Report</a>
+        </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
 {{end}}
