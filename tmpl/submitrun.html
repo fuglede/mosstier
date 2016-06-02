@@ -27,7 +27,9 @@
     <div class="col-sm-3">
     <select class="form-control" onkeyup="updateFormType(this.value)" onchange="updateFormType(this.value)" id="inputCategory" name="category">
       {{ range .PageContents.Categories }}
-        <option value="{{ .ID }}">{{ .Name }}</option>
+        <option value="{{ .ID }}" {{ if eq .ID $.PageContents.OldRun.Category.ID }}selected{{ end }}>
+          {{ .Name }}
+        </option>
       {{ end }}
     </select>
     </div>
@@ -38,7 +40,7 @@
     <div class="col-sm-3">
       <div class="input-group">        
         <span class="input-group-addon">$</span>
-        <input type="text" class="form-control" id="inputScore" name="score">
+        <input type="text" class="form-control" id="inputScore" name="score" value="{{ .PageContents.OldRun.Score }}">
       </div>
     </div>
 </div>
@@ -46,13 +48,13 @@
 <div class="row form-group" id="speedrun">
     <label for="inputTime" class="col-sm-2 control-label">Time:</label>
     <div class="form-group col-lg-1">
-        <input type="text" class="form-control-fixed form-control" id="inputMinutes" placeholder="Mins" name="minutes">
+        <input type="text" class="form-control-fixed form-control" id="inputMinutes" placeholder="Mins" name="minutes"  value="{{ .PageContents.OldRun.NumberOfMinutes }}">
     </div>
     <div class="form-group col-lg-1">
-        <input type="text" class="form-control-fixed form-control" id="inputSeconds" placeholder="Secs" name="seconds">
+        <input type="text" class="form-control-fixed form-control" id="inputSeconds" placeholder="Secs" name="seconds" value="{{ .PageContents.OldRun.NumberOfSeconds }}">
     </div>
     <div class="form-group col-lg-1">
-        <input type="text" class="form-control-fixed form-control" id="inputMilliseconds" placeholder="Millis" name="milliseconds">
+        <input type="text" class="form-control-fixed form-control" id="inputMilliseconds" placeholder="Millis" name="milliseconds" value="{{ .PageContents.OldRun.NumberOfMilliseconds }}">
     </div>
 </div>
 
@@ -63,19 +65,20 @@
         <div class="form-inline">
             <div class="form-group">
                 <select class="form-control" id="inputWorld" name="world">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
+                    {{ range .PageContents.PossibleWorlds }}
+                      <option value="{{ . }}" {{ if eq . $.PageContents.OldRun.GetWorld }}selected{{ end }}>
+                        {{ . }}
+                      </option>
+                    {{ end }}
                 </select>
             </div>
             <div class="form-group">
                 <select class="form-control" id="inputLevel" name="level">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
+                    {{ range .PageContents.PossibleLevels }}
+                      <option value="{{ . }}" {{ if eq . $.PageContents.OldRun.GetFloor }}selected{{ end }}>
+                        {{ . }}
+                      </option>
+                    {{ end }}
                 </select>
             </div>
         </div>
@@ -98,16 +101,16 @@
     <label for="inputPlatform" class="col-sm-2 control-label">Platform:</label>
     <div class="col-sm-3">
     <select class="form-control" id="inputPlatform" name="platform">
-        <option value="1">PC</option>
-        <option value="2">PSN</option>
-        <option value="3">XBLA</option>
+        <option value="1"{{ if eq 1 .PageContents.OldRun.Platform }} selected{{ end }}>PC</option>
+        <option value="2"{{ if eq 2 .PageContents.OldRun.Platform }} selected{{ end }}>PSN</option>
+        <option value="3"{{ if eq 3 .PageContents.OldRun.Platform }} selected{{ end }}>XBLA</option>
     </select>
     </div>
 </div>
 <div class="form-group">
     <label for="inputLink" class="col-sm-2 control-label">Video link:</label>
     <div class="col-sm-3">
-    <input type="text" class="form-control" id="inputLink" name="link" placeholder="https://twitch.tv/...">
+    <input type="text" class="form-control" id="inputLink" name="link" placeholder="https://twitch.tv/..."  value="{{ .PageContents.OldRun.Link }}">
     </div>
     <div class="col-sm-3">
       (include https://.)
@@ -116,7 +119,7 @@
 <div class="form-group">
     <label for="inputComment" class="col-sm-2 control-label">Short comment:</label>
     <div class="col-sm-3">
-    <input type="text" class="form-control" id="inputComment" name="comment" onkeyup="commentCounter()">
+    <input type="text" class="form-control" id="inputComment" name="comment" onkeyup="commentCounter()"  value="{{ .PageContents.OldRun.Comment }}">
     </div>
     <div class="col-sm-3">
       (<span id="counter"></span>/30 chars)

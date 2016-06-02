@@ -107,16 +107,18 @@ func getRunsByRunnerID(runnerID int) (runs []run, err error) {
 
 // getRunByID returns the run with a given integral ID.
 func getRunByID(runID int) (r run, err error) {
-	stmt, err := db.Prepare("SELECT runs.score, runs.cat, users.username FROM runs INNER JOIN users ON runs.runner = users.id WHERE runs.id = ?")
+	stmt, err := db.Prepare("SELECT runs.score, runs.cat, runs.level, runs.link, runs.spelunker, runs.comment, users.username FROM runs INNER JOIN users ON runs.runner = users.id WHERE runs.id = ?")
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
 	var categoryID int
-	err = stmt.QueryRow(runID).Scan(&r.Score, &categoryID, &r.Runner.Username)
+	var spelunkerID int
+	err = stmt.QueryRow(runID).Scan(&r.Score, &categoryID, &r.Level, &r.Link, &spelunkerID, &r.Comment, &r.Runner.Username)
 	r.Runner, _ = getRunnerByUsername(r.Runner.Username)
 	r.ID = runID
 	r.Category, _ = getCategoryByID(categoryID)
+	r.Spelunker, _ = getSpelunkerByID(spelunkerID)
 	return
 }
 
@@ -147,12 +149,42 @@ func (r *run) flag(reason string) error {
 	return nil
 }
 
+// GetWorld returns the last world, the player was in during the run
+// as an integer between 1 and 5.
+func (r *run) GetWorld() int {
+	return (r.Level-1)/4 + 1
+}
+
+// GetWorld returns the last subworld floor, the player was in during
+// the run as an integer between 1 and 4.
+func (r *run) GetFloor() int {
+	return (r.Level-1)%4 + 1
+}
+
 // FormatLevel takes the (one-indexed) number of a level (e.g. 5) and produces
 // a string describing it (e.g. 2-1).
 func (r *run) FormatLevel() string {
-	world := (r.Level-1)/4 + 1
-	floor := (r.Level-1)%4 + 1
-	return fmt.Sprintf("%d-%d", world, floor)
+	return fmt.Sprintf("%d-%d", r.GetWorld(), r.GetFloor())
+}
+
+// NumberOfMinutes returns the number of minutes spent in the run (rounded down),
+// assuming implicitly that the run is a speed run.
+func (r *run) NumberOfMinutes() int {
+	return r.Score / 60000
+}
+
+// NumberOfSeconds returns the number of seconds spent in the run (rounded down),
+// within the last minute of the run, assuming implicitly that the run is a
+// speed run.
+func (r *run) NumberOfSeconds() int {
+	return (r.Score - 60000*r.NumberOfMinutes()) / 1000
+}
+
+// NumberOfMilliseconds returns the number of milliseconds spent in the run,
+// within the last second of the run, assuming implicitly that the run is a
+// speed run.
+func (r *run) NumberOfMilliseconds() int {
+	return r.Score - 60000*r.NumberOfMinutes() - 1000*r.NumberOfSeconds()
 }
 
 // FormatScore turns a result type integer into a readable result, either by adding
@@ -161,8 +193,8 @@ func (r *run) FormatScore() string {
 	if r.Category.Goal == "Score" {
 		return fmt.Sprintf("$%d", r.Score)
 	}
-	minutes := r.Score / 60000
-	seconds := (r.Score - 60000*minutes) / 1000
-	millisecs := r.Score - 60000*minutes - 1000*seconds
-	return fmt.Sprintf("%d:%02d:%03d", minutes, seconds, millisecs)
+	return fmt.Sprintf("%d:%02d:%03d",
+		r.NumberOfMinutes(),
+		r.NumberOfSeconds(),
+		r.NumberOfMilliseconds())
 }

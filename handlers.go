@@ -429,12 +429,21 @@ func rulesHandler(w http.ResponseWriter, r *http.Request) {
 	renderContent("tmpl/rules.html", r, w, getAllCategories())
 }
 
-// submitRunHandler handles GET requests to "/submit-run"
+// submitRunHandler handles GET requests to "/submit-run/*". If a
+// runID is given in the request, pre-fill the form with the info
+// of that run.
 func submitRunHandler(w http.ResponseWriter, r *http.Request) {
 	type submitRunData struct {
-		Categories []category
-		Spelunkers []spelunker
+		Categories     []category
+		Spelunkers     []spelunker
+		OldRun         *run
+		PossibleWorlds []int
+		PossibleLevels []int
 	}
-	data := submitRunData{getAllCategories(), spelunkers}
+	vars := mux.Vars(r)
+	oldRunID, _ := strconv.Atoi(vars["runID"])
+	oldRun, _ := getRunByID(oldRunID)
+	data := submitRunData{getAllCategories(), spelunkers, &oldRun,
+		[]int{1, 2, 3, 4, 5}, []int{1, 2, 3, 4}}
 	renderContent("tmpl/submitrun.html", r, w, data)
 }

@@ -1,6 +1,6 @@
 $( document ).ready(function() {
     commentCounter();
-    updateFormType(1);
+    updateFormType($("#inputCategory").val());
     $("#error").css("display", "none");
     $("#working").css("display", "none");
 });
