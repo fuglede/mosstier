@@ -86,7 +86,8 @@ func steamLookupHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// parseSteamRequest parses a POSt request to "/steam-lookup"
+// parseSteamRequest performs error handling on all request
+// to "/steam-lookup"
 func parseSteamRequest(r *http.Request) (result int, level int, spelunker int, err error) {
 	err = r.ParseForm()
 	if err != nil {

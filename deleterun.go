@@ -25,7 +25,8 @@ func deleteRunHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// parseDeleteRunRequest parses requests to "/delete-run"
+// parseDeleteRunRequest performs error handling on
+// requests to "/delete-run"
 func parseDeleteRunRequest(r *http.Request) error {
 	err := r.ParseForm()
 	if err != nil {
