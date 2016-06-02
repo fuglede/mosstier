@@ -98,7 +98,7 @@
       <tbody>
       {{ range .PageContents.FlaggedRuns }}
         <tr>
-          <td>{{ .Category.Name }}</td>
+          <td><a href="/category/{{ .Category.Abbr }}">{{ .Category.Name }}</a></td>
           <td>{{ .FormatScore }}</td>
           <td>{{ .Flag }}</td>
           <td><a href="/submit-run/{{ .ID }}">Edit</a></td>
