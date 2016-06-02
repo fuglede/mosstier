@@ -73,6 +73,7 @@ func initializeHandlers() {
 	router.HandleFunc("/category/{categoryName:[a-z]+}", categoryHandler)
 	router.HandleFunc("/category/{categoryName:[a-z]+}/find/{runner:[0-9a-zA-Z_-]+}", categoryHandler)
 	router.HandleFunc("/contact", contactHandler)
+	router.HandleFunc("/delete-run", deleteRunHandler)
 	router.HandleFunc("/edit-profile", editProfileHandler)
 	router.HandleFunc("/export", exportOverviewHandler)
 	router.HandleFunc("/export/all/{exportFormat:[a-z]+}", exportWrHandler)

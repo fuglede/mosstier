@@ -149,6 +149,16 @@ func (r *run) flag(reason string) error {
 	return nil
 }
 
+// delete removes the from the date database.
+func (r *run) delete() error {
+	query, err := db.Prepare("DELETE FROM runs WHERE id = ?")
+	if err != nil {
+		return err
+	}
+	_, err = query.Exec(r.ID)
+	return err
+}
+
 // GetWorld returns the last world, the player was in during the run
 // as an integer between 1 and 5.
 func (r *run) GetWorld() int {
