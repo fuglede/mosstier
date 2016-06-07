@@ -159,8 +159,6 @@ func (r *run) flag(reason string) error {
 		return errors.New("Could not perform database query: " + err.Error())
 	}
 	// Now inform the user if they have asked to be informed
-	fmt.Println(r.Runner.EmailFlag)
-	fmt.Println(r.Runner)
 	if r.Runner.EmailFlag {
 		mailBody := "Hi %s.\n\nThis is to inform you that your Moss Tier run " +
 			"in the category %s has been flagged as violating the rules by one " +
