@@ -71,6 +71,9 @@ func makeUser(username, email, password string) (err error) {
 // removeRunsByCategory removes from the database all runs the
 // user has in a given category.
 func (r *runner) removeRunsByCategory(cat category) (err error) {
+	// It would arguably follow the logic of the app a bit closer
+	// to find the runs in question and invoke deleteFromDatabase on
+	// them, but let's just do it the straightforward way.
 	query, err := db.Prepare("DELETE FROM runs WHERE runner = ? AND cat = ?")
 	if err != nil {
 		return
