@@ -8,20 +8,27 @@ import (
 )
 
 type runner struct {
-	ID             int
-	Username       string
-	Password       string
-	Email          string
-	Country        string
-	Spelunker      spelunker
-	Steam          int
-	Psn            string
-	Xbla           string
-	Twitch         string
-	YouTube        string
-	FreeText       string
-	EmailFlag      bool
-	EmailWr        bool
+	// ID is the ID representing the runner in the database.
+	ID       int
+	Username string
+	// Password is a bcrypted hash of the runner's password
+	Password string
+	Email    string
+	Country  string
+	// Spelunker is the runner's default spelunker
+	Spelunker spelunker
+	// Steam is the runner's Steam64 ID
+	Steam    int
+	Psn      string
+	Xbla     string
+	Twitch   string
+	YouTube  string
+	FreeText string
+	// EmailFlag is true iff the runner gets emails on flagged runs
+	EmailFlag bool
+	// EmailWr is true iff the runner gets emails on new WRs
+	EmailWr bool
+	// EmailChallenge is true iff the runner gets emails on new WRs in challenge categories
 	EmailChallenge bool
 }
 
@@ -60,11 +67,11 @@ func makeUser(username, email, password string) (err error) {
 	if err != nil {
 		return
 	}
-	stmt, err := db.Prepare("INSERT INTO users SET username = ?, email = ?, pass = ?")
+	query, err := db.Prepare("INSERT INTO users SET username = ?, email = ?, pass = ?")
 	if err != nil {
 		return
 	}
-	_, err = stmt.Exec(username, email, string(hashedPassword))
+	_, err = query.Exec(username, email, string(hashedPassword))
 	return
 }
 

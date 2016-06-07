@@ -62,7 +62,7 @@
           <td>{{ .FormatScore }}</td>
           <td>{{ .FormatLevel }}</td>
       <td><img src="/img/spelunkers/{{ .Spelunker.ID }}.png" class="spelunker" alt="{{ .Spelunker.Name }}" /></td>
-      <td><a href="{{ .Link }}">Watch</a></td>
+      <td><a href="{{ .Link }}" title="Submitted {{ .FormatTime }}">Watch</a></td>
           <td>{{ .Comment }}</td>
           {{ if eq $.ActiveUser.ID $.PageContents.Runner.ID }}
             <td><a href="/submit-run/{{ .ID }}">Edit</a></td>

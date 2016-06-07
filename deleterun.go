@@ -51,7 +51,7 @@ func parseDeleteRunRequest(r *http.Request) error {
 	if activeUser.ID != run.Runner.ID {
 		return errors.New("User is not the runner of the run")
 	}
-	err = run.delete()
+	err = run.deleteFromDatabase()
 	if err != nil {
 		return errors.New("Could not delete run")
 	}

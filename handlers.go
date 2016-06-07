@@ -302,6 +302,7 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Could not get runs: ", err)
 		http.Error(w, "Internal server error", 500)
+		return
 	}
 	type profileData struct {
 		Runner      *runner

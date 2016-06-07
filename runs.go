@@ -3,21 +3,30 @@ package main
 import (
 	"errors"
 	"fmt"
+	"time"
 )
 
 type run struct {
-	ID             int
+	// ID is the ID representing the run in the database.
+	ID int
+	// RankInCategory describes the rank of the run if it is in the database.
 	RankInCategory int
 	Runner         runner
 	Category       category
-	Score          int
-	Level          int
-	Link           string
-	Platform       int
-	Spelunker      spelunker
-	Time           int
-	Comment        string
-	Flag           string
+	// Score is the score of the run. For score runs it is the actual score, and
+	// for speed runs, it is the completion time in milliseconds.
+	Score int
+	// Level is the final level of the run, given as an integer; for example,
+	// 1-1 is represented by 1, 1-4 by 4, and 2-1 by 5.
+	Level     int
+	Link      string
+	Platform  int
+	Spelunker spelunker
+	// Time is the Unix time of submission of the run.
+	Time    time.Time
+	Comment string
+	// Flag is a string describing the reason for removal for removed runs.
+	Flag string
 }
 
 // getAllWorldRecords returns a slice of all current world records
@@ -59,13 +68,15 @@ func getRunsByCategory(category category, limit int64) (runs []run, err error) {
 		var r run
 		var p runner
 		var spelunkerID int
-		err = rows.Scan(&r.ID, &r.Score, &r.Level, &r.Link, &spelunkerID, &r.Time, &r.Comment, &p.ID, &p.Username, &p.Country)
+		var unixTime int64
+		err = rows.Scan(&r.ID, &r.Score, &r.Level, &r.Link, &spelunkerID, &unixTime, &r.Comment, &p.ID, &p.Username, &p.Country)
 		if err != nil {
 			return
 		}
 		r.Runner = p
 		r.Category = category
 		r.Spelunker, _ = getSpelunkerByID(spelunkerID)
+		r.Time = time.Unix(unixTime, 0)
 		r.RankInCategory = i
 		runs = append(runs, r)
 		i++
@@ -93,13 +104,15 @@ func getRunsByRunnerID(runnerID int) (runs []run, err error) {
 		var r run
 		var spelunkerID int
 		var categoryID int
-		err = rows.Scan(&r.ID, &categoryID, &r.Score, &r.Level, &r.Link, &spelunkerID, &r.Time, &r.Comment, &r.Flag)
+		var unixTime int64
+		err = rows.Scan(&r.ID, &categoryID, &r.Score, &r.Level, &r.Link, &spelunkerID, &unixTime, &r.Comment, &r.Flag)
 		if err != nil {
 			return
 		}
 		r.Runner = runner
 		r.Category, _ = getCategoryByID(categoryID)
 		r.Spelunker, _ = getSpelunkerByID(spelunkerID)
+		r.Time = time.Unix(unixTime, 0)
 		runs = append(runs, r)
 	}
 	return
@@ -172,14 +185,30 @@ func (r *run) flag(reason string) error {
 	return nil
 }
 
-// delete removes the from the date database.
-func (r *run) delete() error {
+// addToDatabase adds the run to the database, remo
+func (r *run) addToDatabase() (err error) {
+	// All fields but ID, RankInCategory, Time and Flag are mandatory
+	if r.Runner.ID == 0 || r.Category.ID == 0 || r.Score == 0 || r.Level == 0 ||
+		r.Platform == 0 || r.Spelunker.ID == 0 || r.Comment == "" {
+		return errors.New("Could not add to database: Missing mandatory field.")
+	}
+	currentTime := time.Now().Unix()
+	query, err := db.Prepare("INSERT INTO runs SET runner = ?, cat = ?, score = ?, level = ?, link = ?, platform = ?, spelunker = ?, time = ?, comment = ?")
+	if err != nil {
+		return
+	}
+	_, err = query.Exec(r.Runner.ID, r.Category.ID, r.Score, r.Level, r.Link, r.Platform, r.Spelunker.ID, currentTime, r.Comment)
+	return
+}
+
+// deleteFromDatabase removes the run from the database.
+func (r *run) deleteFromDatabase() (err error) {
 	query, err := db.Prepare("DELETE FROM runs WHERE id = ?")
 	if err != nil {
-		return err
+		return
 	}
 	_, err = query.Exec(r.ID)
-	return err
+	return
 }
 
 // GetWorld returns the last world, the player was in during the run
@@ -230,4 +259,9 @@ func (r *run) FormatScore() string {
 		r.NumberOfMinutes(),
 		r.NumberOfSeconds(),
 		r.NumberOfMilliseconds())
+}
+
+// FormatTime formats the time of the run.
+func (r *run) FormatTime() string {
+	return r.Time.Format("2006-01-02")
 }
