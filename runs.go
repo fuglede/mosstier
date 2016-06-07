@@ -20,7 +20,7 @@ type run struct {
 	Flag           string
 }
 
-// getAllWorldRecrods returns a slice of all current world records
+// getAllWorldRecords returns a slice of all current world records
 func getAllWorldRecords() ([]run, error) {
 	var err error
 	var runsInCategory []run
@@ -122,7 +122,32 @@ func getRunByID(runID int) (r run, err error) {
 	return
 }
 
-// Flag flags the run, removing it from the leaderboards, and
+// hypotheticalRank calculates the rank that a given result would achieve
+// on the leaderboards of a given category. For example, if the result would
+// be a new WR, the rank returned is 1. For a score run, the given result is
+// the score, and for a speed run, it is the time in milliseconds.
+func hypotheticalRank(result int, cat category) (rank int, err error) {
+	// We use the category goal to define whether or not we are interested
+	// in scores below or above the given one.
+	var inequality string
+	if cat.Goal == "Score" {
+		inequality = ">="
+	} else if cat.Goal == "Time" {
+		inequality = "<="
+	} else {
+		err = errors.New("Unknown category goal. Expected \"Score\" or \"Time\". Got " + cat.Goal)
+		return
+	}
+	query, err := db.Prepare("SELECT COUNT(*) FROM runs WHERE cat = ? AND score " + inequality + " ?")
+	if err != nil {
+		return
+	}
+	err = query.QueryRow(cat.ID, result).Scan(&rank)
+	rank++
+	return
+}
+
+// flag flags the run, removing it from the leaderboards, and
 // informing the runner the reason why.
 func (r *run) flag(reason string) error {
 	query, err := db.Prepare("UPDATE runs SET flag = ? WHERE id = ?")
