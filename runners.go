@@ -68,6 +68,17 @@ func makeUser(username, email, password string) (err error) {
 	return
 }
 
+// removeRunsByCategory removes from the database all runs the
+// user has in a given category.
+func (r *runner) removeRunsByCategory(cat category) (err error) {
+	query, err := db.Prepare("DELETE FROM runs WHERE runner = ? AND cat = ?")
+	if err != nil {
+		return
+	}
+	_, err = query.Exec(r.ID, cat.ID)
+	return
+}
+
 // updatePassword sets a new password for the runner.
 func (r *runner) updatePassword(password string) error {
 	if r.Email == "" {
